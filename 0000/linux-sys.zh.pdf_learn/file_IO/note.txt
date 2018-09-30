@@ -6,3 +6,22 @@
 	如果A进程和B进程同时打开同一文件，进程A写到内核I/0缓冲区中的数据从B进程也能读到，C标准库的I/0缓冲区不具备这个特性
 	（想想为什么，因为内核空间是共享的,进程的用户空间是完全独立的）
 	相关资料：https://www.cnblogs.com/orlion/p/6258691.html
+	全缓冲：read一次之后，将数据写入缓冲区，_IO_read_ptr没有偏移到_IO_read_end就不用调用系统调用read，
+			只要将数据从myfile的缓冲区拷贝到buf即可。
+			_IO_read_base始终指向缓冲区的开始
+			_IO_read_end始终指向已经从内核读入缓冲区的字符的下一个（对全缓冲区来说，buffered I/O读每次都试图将缓冲区读满）
+			_IO_read_ptr始终指向缓冲区中已经被用户读走的字符的下一个
+				(_IO_read_end < (_IO_buf_base-_IO_buf_end)) && (_IO_read_ptr == _IO_read_end)
+				时则已经到达文件末尾其中_IO_buf_base-_IO_buf_end是缓冲区的长度
+			第一次fgets(或其他的)时,标准I/O会调用read将缓冲区充满,下一次fgets不调用read而是直接从
+			该缓冲区中拷贝数据,直到缓冲区的中剩余的数据不够时,再次调用read.在这个过程中,_IO_read_ptr
+			就是用来记录缓冲区中哪些数据是已读的,哪些数据是未读的.
+			只有当标准I/O自动flush(比如当缓冲区已满时)或者手工调用fflush时,标准I/O才会调用一次write系统调用.
+			例子中,fwrite(buf+i, 1, 512, myfile);这一句只是将buf+i接下来的512个字节写入缓冲区,由于缓冲区未满,
+			标准I/O并未调用write.此时,myfile->_IO_write_ptr = myfile->_IO_write_base;会导致标准I/O认为没有数据写
+			入缓冲区,所以永远不会调用write,这样aaa.txt文件得不到写入.注释掉myfile->_IO_write_ptr = myfile->_IO_write_base;
+			前后,看看效果
+　　		写的时候:_IO_write_base始终指向缓冲区的开始，_IO_write_end全缓冲的时候,始终
+			指向缓冲区的最后一个字符的下一个(对全缓冲来说,buffered I/O写总是试图在缓冲区写满之后,再系统调用write)，
+			_IO_write_ptr始终指向缓冲区中已被用户写入的字符的下一个，flush的时候,将_IO_write_base和_IO_write_ptr之
+			间的字符通过系统调用write写入内核
