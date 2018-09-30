@@ -25,3 +25,29 @@
 			指向缓冲区的最后一个字符的下一个(对全缓冲来说,buffered I/O写总是试图在缓冲区写满之后,再系统调用write)，
 			_IO_write_ptr始终指向缓冲区中已被用户写入的字符的下一个，flush的时候,将_IO_write_base和_IO_write_ptr之
 			间的字符通过系统调用write写入内核
+	行缓冲：仅仅需要4个字符,但是,输入行中的其他数据也被写入缓冲区,但是_IO_read_ptr
+			向前移动了5位,下次再次调用fgets操作时,就不需要再次调用系统调用read,只要将
+			数据从stdin的缓冲区拷贝到buf2即可(从stdin->_IO_read_ptr开始拷贝)
+			stdin->_IO_read_ptr = stdin->_IO_read_end;会导致标准I/O会认为缓冲区已空,
+			再次fgets则需要再次调用read.
+　　		_IO_read_base始终指向缓冲区的开始
+　　		_IO_read_end始终指向已从内核读入缓冲区的字符的下一个
+　　		_IO_read_ptr始终指向缓冲区中已被用户读走的字符的下一个
+　　		(_IO_read_end < (_IO_buf_base-_IO_buf_end)) && (_IO_read_ptr == _IO_read_end)时
+			则已经到达文件末尾其中_IO_buf_base-_IO_buf_end是缓冲区的长度
+			行缓冲时,下面3个条件之一会导致缓冲区立即被flush
+　　		1. 缓冲区已满
+　　		2. 遇到一个换行符;比如将上面例子中buf[4]改为'/n'时
+　　		3. 再次要求从内核中得到数据时;比如上面的程序加上getchar()会导致马上输出
+　　		行缓冲写的时候:
+　　		_IO_write_base始终指向缓冲区的开始
+　　		_IO_write_end始终指向缓冲区的开始
+　　		_IO_write_ptr始终指向缓冲区中已被用户写入的字符的下一个
+　　		flush的时候,将_IO_write_base和_IO_write_ptr之间的字符通过系统调用write写入内核
+	无缓冲：标准I/O不对字符进行缓冲存储.典型代表是stderr。这里的无缓冲,并不是指缓冲区大小为0,其实,还是有缓冲的,大小为1，对无缓冲的流的每次读写操作都会引起系统调用
+	feof的问题：
+			这里从缓冲区的角度去考察一下.对于一个空文件,为什么要先读一下,才能用feof判断出该文件到了结尾了呢?
+			每当满足(_IO_read_end < (_IO_buf_base-_IO_buf_end)) && (_IO_read_ptr == _IO_read_end)时,
+			标准I/O则认为已经到达文件末尾,feof(stdin)才会被设置其中_IO_buf_base-_IO_buf_end是缓冲区的长度。
+　　		也就是说,标准I/O是通过它的缓冲区来判断流是否要结束了的.这就解释了为什么即使是一个空文件,标准I/O也
+			需要读一次,才能使用feof判断释放为空。
