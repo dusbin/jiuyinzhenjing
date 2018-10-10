@@ -5,7 +5,8 @@
 #include<dirent.h>
 #include<string.h>
 #define MAX_PATH 1024
-void dirwalk(char *dir,void (*fcn)(char*)){
+void fsize(char *name);
+void dirwalk(char *dir){
 	char name[MAX_PATH];
 	struct dirent *dp;
 	DIR *dfd;
@@ -20,7 +21,7 @@ void dirwalk(char *dir,void (*fcn)(char*)){
 			fprintf(stderr,"dirwalk:name %s %s too long\n",dir,dp->d_name);
 		else{
 			sprintf(name,"%s/%s",dir,dp->d_name);//拼接下一级目录
-			(*fcn)(name);//进入到下一级目录
+			fsize(name);//进入到下一级目录
 		}
 	}
 	closedir(dfd);
@@ -32,7 +33,7 @@ void fsize(char *name){
 		return;
 	}
 	if((stbuf.st_mode & S_IFMT) == S_IFDIR)
-		dirwalk(name,fsize); //如果是目录，进入目录。实现函数递归
+		dirwalk(name); //如果是目录，进入目录。实现函数递归
 	printf("%8ld %s\n",stbuf.st_size,name);//主要打印
 }
 int main(int argc,char **argv){
