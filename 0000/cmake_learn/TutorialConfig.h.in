@@ -1,6 +1,6 @@
 // the configured options and settings for Tutorial
-#define Tutorial_VERSION_MAJOR @Tutorial_VERSION_MAJOR@
-#define Tutorial_VERSION_MINOR @Tutorial_VERSION_MINOR@
+#define Tutorial_VERSION_MAJOR @Tutorial_VERSION_MAJOR@ //定义的版本key
+#define Tutorial_VERSION_MINOR @Tutorial_VERSION_MINOR@ //定义的版本key
 
 //作者：saka
 //链接：https://juejin.im/post/5a6f32e86fb9a01ca6031230
