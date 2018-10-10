@@ -3,6 +3,15 @@
 # 
 cmake_minimum_required(VERSION 2.6)
 project(Tutorial)
+#设置版本号
+set (Tutorial_VERSION_MAJOR 8)
+set (Tutorial_VERSION_MINOR 9)
+#设置配置文件
+configure_file(
+	"${PROJECT_SOURCE_DIR}/TutorialConfig.h.in"
+	"${PROJECT_BINARY_DIR}/TutorialConfig.h"
+)
+include_directories("${PROJECT_BINARY_DIR}")
 add_executable(Tutorial #程序名
 	src/tutorial.cxx #源码
 )
