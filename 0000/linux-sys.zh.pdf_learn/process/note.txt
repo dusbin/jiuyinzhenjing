@@ -5,4 +5,6 @@
 005 一个程序可以多次加载到内存，称为同时运行的多个进程。
 006 进程环境变量，PATH 可执行文件的搜索路径，可以使用echo $PATH查看
 007 c代码中可以使用setenv设置 getenv获取，unsetenv删除name的定义
-27(37/179)
+008 进程状态，使用getrlimit setrlimit进行设置获取。cat /proc/self/limits ulimit -a
+009 fork的使用
+32(42/179)
