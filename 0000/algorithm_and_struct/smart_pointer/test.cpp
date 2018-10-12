@@ -31,6 +31,7 @@ void test_1(){
 		ps->comment();
 	}
 }
+//会崩溃，原因是films[2]不再引用该字符串从而变成空指针
 void test_2(){
 	auto_ptr<string> films[5] = {
 		auto_ptr<string>(new string("Fowl Balls")),
@@ -47,10 +48,29 @@ void test_2(){
 	cout << "The winner is " << *pwin << endl;
 	//cin.get();
 }
+//test_2修改为shared_ptr就不会崩溃了
+//使用shared_ptr时运行正常，因为shared_ptr采用引用计数，pwin和films[2]都指向同一块内存，在释放空间时因为事先要判断引用计数值的大小因此不会出现多次删除一个对象的错误。
+void test_3(){
+	shared_ptr<string> films[5] = {
+		shared_ptr<string>(new string("Fowl Balls")),
+		shared_ptr<string>(new string("Duck Walks")),
+		shared_ptr<string>(new string("Chicken Runs")),
+		shared_ptr<string>(new string("Turkey Errors")),
+		shared_ptr<string>(new string("Goose Eggs"))
+	};
+	shared_ptr<string>pwin;
+	pwin = films[2];// films[2] loses ownership. 将所有权从films[2]转让给pwin，此时films[2]不再引用该字符串从而变成空指针
+	cout << "The nominees for best avian baseballl film are\n";
+	for(int i = 0; i < 5; ++i)
+		cout << *films[i] << endl;
+	cout << "The winner is " << *pwin << endl;
+	//cin.get();
+}
 int main()
 {
 	//test_1();
-	test_2();
+	//test_2();
+	test_3();
     return 0;
 }
 /*
