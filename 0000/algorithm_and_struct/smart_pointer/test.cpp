@@ -129,45 +129,71 @@ class Parent;
 
 class Parent {
 private:
-    Child* myChild;
+    //Child* myChild;
+	std::shared_ptr<Child> ChildPtr;
 public:
+	/*
     void setChild(Child* ch) {
         this->myChild = ch;
     }
+	*/
+	void setChild(std::shared_ptr<Child> child){
+		this->ChildPtr = child;
+	}
 
     void doSomething() {
-        if (this->myChild) {
-
+        //if (this->myChild) {
+		if(this->ChildPtr.use_count()){
         }
     }
 
     ~Parent() {
-        delete myChild;
+        //delete myChild;
     }
 };
 
 class Child {
 private:
-    Parent* myParent;
+    //Parent* myParent;
+	std::shared_ptr<Parent> ParentPtr;
 public:
+	/*
     void setPartent(Parent* p) {
         this->myParent = p;
     }
+	*/
+	void setPartent(std::shared_ptr<Parent> parent){
+		this->ParentPtr = parent;
+	}
     void doSomething() {
-        if (this->myParent) {
-
+        //if (this->myParent) {
+		if(this->ParentPtr.use_count()){
         }
     }
     ~Child() {
-        delete myParent;
+        //delete myParent;
     }
 };
 void test_8(){
-	Parent* p = new Parent;
-	Child* c = new Child;
-	p->setChild(c);
-	c->setPartent(p);
-	delete c;
+	//Parent* p = new Parent;
+	//Child* c = new Child;
+	//p->setChild(c);
+	//c->setPartent(p);
+	//delete c;
+	std::weak_ptr<Parent> wpp;
+    std::weak_ptr<Child> wpc;
+    {
+        std::shared_ptr<Parent> p(new Parent);
+        std::shared_ptr<Child> c(new Child);
+        p->setChild(c);
+        c->setPartent(p);
+        wpp = p;
+        wpc = c;
+        std::cout << p.use_count() << std::endl; // 2
+        std::cout << c.use_count() << std::endl; // 2
+    }
+    std::cout << wpp.use_count() << std::endl;  // 1
+    std::cout << wpc.use_count() << std::endl;  // 1
 }
 int main()
 {
