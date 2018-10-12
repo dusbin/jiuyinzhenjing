@@ -76,19 +76,109 @@ void test_4(){
 		unique_ptr<string>(new string("Goose Eggs"))
 	};
 	unique_ptr<string>pwin;
-	pwin = films[2];// films[2] loses ownership. 将所有权从films[2]转让给pwin，此时films[2]不再引用该字符串从而变成空指针
+	//有下边一行编译不过
+	//pwin = films[2];// films[2] loses ownership. 将所有权从films[2]转让给pwin，此时films[2]不再引用该字符串从而变成空指针
 	cout << "The nominees for best avian baseballl film are\n";
 	for(int i = 0; i < 5; ++i)
 		cout << *films[i] << endl;
 	cout << "The winner is " << *pwin << endl;
 	//cin.get();
 }
+//shared_ptr使用
+void test_5(){
+	int a = 10;
+    std::shared_ptr<int> ptra = std::make_shared<int>(a);
+	std::shared_ptr<int> ptra2(ptra); //copy
+	std::cout << ptra.use_count() << std::endl;
+
+	int b = 20;
+	int *pb = &a;
+	//std::shared_ptr<int> ptrb = pb;  //error
+	std::shared_ptr<int> ptrb = std::make_shared<int>(b);
+	ptra2 = ptrb; //assign
+	pb = ptrb.get(); //获取原始指针
+
+	std::cout << ptra.use_count() << std::endl;
+	std::cout << ptrb.use_count() << std::endl;
+}
+//unique_ptr“唯一”拥有其所指对象，同一时刻只能有一个unique_ptr指向给定对象（通过禁止拷贝语义、只有移动语义来实现）。相比与原始指针unique_ptr用于其RAII的特性，使得在出现异常的情况下，动态资源能得到释放。unique_ptr指针本身的生命周期：从unique_ptr指针创建时开始，直到离开作用域。离开作用域时，若其指向对象，则将其所指对象销毁(默认使用delete操作符，用户可指定其他操作)。unique_ptr指针与其所指对象的关系：在智能指针生命周期内，可以改变智能指针所指对象，如创建智能指针时通过构造函数指定、通过reset方法重新指定、通过release方法释放所有权、通过移动语义转移所有权。
+void test_6(){
+	std::unique_ptr<int> uptr(new int(10));  //绑定动态对象
+	//std::unique_ptr<int> uptr2 = uptr;  //不能賦值
+	//std::unique_ptr<int> uptr2(uptr);  //不能拷貝
+	std::unique_ptr<int> uptr2 = std::move(uptr); //轉換所有權
+	uptr2.release(); //释放所有权
+}
+//weak_ptr是为了配合shared_ptr而引入的一种智能指针，因为它不具有普通指针的行为，没有重载operator*和->,它的最大作用在于协助shared_ptr工作，像旁观者那样观测资源的使用情况。weak_ptr可以从一个shared_ptr或者另一个weak_ptr对象构造，获得资源的观测权。但weak_ptr没有共享资源，它的构造不会引起指针引用计数的增加。使用weak_ptr的成员函数use_count()可以观测资源的引用计数，另一个成员函数expired()的功能等价于use_count()==0,但更快，表示被观测的资源(也就是shared_ptr的管理的资源)已经不复存在。weak_ptr可以使用一个非常重要的成员函数lock()从被观测的shared_ptr获得一个可用的shared_ptr对象， 从而操作资源。但当expired()==true的时候，lock()函数将返回一个存储空指针的shared_ptr。
+void test_7(){
+	std::shared_ptr<int> sh_ptr = std::make_shared<int>(10);
+	std::cout << sh_ptr.use_count() << std::endl;
+
+	std::weak_ptr<int> wp(sh_ptr);
+	std::cout << wp.use_count() << std::endl;
+
+	if(!wp.expired()){
+		std::shared_ptr<int> sh_ptr2 = wp.lock(); //get another shared_ptr
+		*sh_ptr = 100;
+		std::cout << wp.use_count() << std::endl;
+	}
+}
+//循环引用
+class Child;
+class Parent;
+
+class Parent {
+private:
+    Child* myChild;
+public:
+    void setChild(Child* ch) {
+        this->myChild = ch;
+    }
+
+    void doSomething() {
+        if (this->myChild) {
+
+        }
+    }
+
+    ~Parent() {
+        delete myChild;
+    }
+};
+
+class Child {
+private:
+    Parent* myParent;
+public:
+    void setPartent(Parent* p) {
+        this->myParent = p;
+    }
+    void doSomething() {
+        if (this->myParent) {
+
+        }
+    }
+    ~Child() {
+        delete myParent;
+    }
+};
+void test_8(){
+	Parent* p = new Parent;
+	Child* c = new Child;
+	p->setChild(c);
+	c->setPartent(p);
+	delete c;
+}
 int main()
 {
 	//test_1();
 	//test_2();
 	//test_3();
-	test_4();
+	//test_4();
+	//test_5();
+	//test_6();
+	//test_7();
+	test_8();
     return 0;
 }
 /*
@@ -203,15 +293,20 @@ int main()
 				两个对象包含都指向第三个对象的指针；
 				STL容器包含指针。很多STL算法都支持复制和赋值操作，这些操作可用于shared_ptr，但不能用于unique_ptr（编译器发出warning）和auto_ptr（行为不确定）。如果你的编译器没有提供shared_ptr，可使用Boost库提供的shared_ptr。
 			2.如果程序不需要多个指向同一个对象的指针，则可使用unique_ptr。如果函数使用new分配内存，并返还指向该内存的指针，将其返回类型声明为unique_ptr是不错的选择。这样，所有权转让给接受返回值的unique_ptr，而该智能指针将负责调用delete。可将unique_ptr存储到STL容器在那个，只要不调用将一个unique_ptr复制或赋给另一个算法（如sort()）
---------------------- 
-作者：ZhikangFu 
-来源：CSDN 
-原文：https://blog.csdn.net/ZhikangFu/article/details/51866988?utm_source=copy 
-版权声明：本文为博主原创文章，转载请附上博文链接！
-作者：ZhikangFu 
-来源：CSDN 
-原文：https://blog.csdn.net/ZhikangFu/article/details/51866988?utm_source=copy 
-版权声明：本文为博主原创文章，转载请附上博文链接！
+		理解智能指针需要从下面三个层次：
+
+			从较浅的层面看，智能指针是利用了一种叫做RAII（资源获取即初始化）的技术对普通的指针进行封装，这使得智能指针实质是一个对象，行为表现的却像一个指针。
+			智能指针的作用是防止忘记调用delete释放内存和程序异常的进入catch块忘记释放内存。另外指针的释放时机也是非常有考究的，多次释放同一个指针会造成程序崩溃，这些都可以通过智能指针来解决。
+			智能指针还有一个作用是把值语义转换成引用语义。C++和Java有一处最大的区别在于语义不同，在Java里面下列代码：
+		shared_ptr的使用
+
+			shared_ptr多个指针指向相同的对象。shared_ptr使用引用计数，每一个shared_ptr的拷贝都指向相同的内存。每使用他一次，内部的引用计数加1，每析构一次，内部的引用计数减1，减为0时，自动删除所指向的堆内存。shared_ptr内部的引用计数是线程安全的，但是对象的读取需要加锁。
+			初始化。智能指针是个模板类，可以指定类型，传入指针通过构造函数初始化。也可以使用make_shared函数初始化。不能将指针直接赋值给一个智能指针，一个是类，一个是指针。例如std::shared_ptr<int> p4 = new int(1);的写法是错误的
+			拷贝和赋值。拷贝使得对象的引用计数增加1，赋值使得原对象引用计数减1，当计数为0时，自动释放内存。后来指向的对象引用计数加1，指向后来的对象。
+			get函数获取原始指针
+			注意不要用一个原始指针初始化多个shared_ptr，否则会造成二次释放同一内存
+			注意避免循环引用，shared_ptr的一个最大的陷阱是循环引用，循环，循环引用会导致堆内存无法正确释放，导致内存泄漏。循环引用在weak_ptr中介绍。
+
 		--------------------- 
 		作者：ZhikangFu 
 		来源：CSDN 
