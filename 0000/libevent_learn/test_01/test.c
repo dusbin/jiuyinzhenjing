@@ -39,8 +39,8 @@ static void write_to_file_cb(int severity,const char *msg){
 		return;
 	switch(severity){
 		case _EVENT_LOG_DEBUG	:	s=DEBUG_COLOUR"DEBUG"NONE;		break;
-		case _EVENT_LOG_MSG		:	s=INFO_COLOUR"INFO"NONE;			break;
-		case _EVENT_LOG_WARN	:	s=WARNING_COLOUR"WARNING"NONE;	break;
+		case _EVENT_LOG_MSG		:	s=INFO_COLOUR"INFO "NONE;			break;
+		case _EVENT_LOG_WARN	:	s=WARNING_COLOUR"WARN "NONE;	break;
 		case _EVENT_LOG_ERR		:	s=ERROR_COLOUR"ERROR"NONE;		break;
 		case _EVENT_LOG_TRACE	:	s=TRACE_COLOUR"TRACE"NONE;		break;
 		default					:	s=TRACE_COLOUR"?"NONE;				break;
@@ -66,16 +66,30 @@ char* gettime(){
 	s[strlen(s)-1] = '\0';
 	return s;
 }
+#define LOG(flag,format,...)\
+{\
+	{\
+		char msg_data[2048] = {0};\
+		sprintf(msg_data,"[%s][%s][%s()][%d]:"format,gettime(),__FILE__,__FUNCTION__,__LINE__,##__VA_ARGS__);\
+		write_to_file_cb(flag,msg_data);\
+	}\
+}
 int main(){
 	FILE *fp = fopen("/opt/test.txt","w+");
 	set_logfile(fp);
-	write_to_file_cb(EVENT_LOG_DEBUG,"this is debug");
+	LOG(EVENT_LOG_DEBUG,"this is debug");
 	sleep(1);
-	write_to_file_cb(EVENT_LOG_MSG,"this is msg");
-	write_to_file_cb(EVENT_LOG_WARN,"this is warning");
-	write_to_file_cb(EVENT_LOG_ERR,"this is error");
-	write_to_file_cb(EVENT_LOG_TRACE,"this is trace");
-	write_to_file_cb(EVENT_LOG_NONE,"this is unkown");
+	LOG(EVENT_LOG_MSG,"this is msg");
+	sleep(2);
+	LOG(EVENT_LOG_WARN,"this is warning");
+	sleep(3);
+	LOG(EVENT_LOG_ERR,"this is error");
+	sleep(4);
+	LOG(EVENT_LOG_TRACE,"this is trace");
+	sleep(3);
+	LOG(EVENT_LOG_NONE,"this is unkown");
+	sleep(2);
+	LOG(EVENT_LOG_NONE,"I am %s %d %ld %f","duzhengbin",180,(long int)140,2.03);
 	fclose(fp);
 	fp = NULL;
 	free(timep);
