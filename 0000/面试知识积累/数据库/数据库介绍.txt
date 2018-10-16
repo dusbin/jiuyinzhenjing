@@ -1,0 +1,130 @@
+事务
+	满足ACID特性的一组操作，可以通过commit提交一个事务，也可以rollback回滚
+	原子性，事务是不可分割的最小单元，提交回滚的操作，回滚可以根据日志进行逆向操作
+	一致性 数据库执行事务前后保持一致性状态，
+		一致性状态下所有事务对一个数据的读取结果都相同
+	隔离性 事务修改在提交前，对其他事务不可见
+	持久性 一旦提交永远保存到数据库中，
+	mysql 自动提交模式
+并发一致性问题
+	并发环境下事务的隔离性很难保证
+	丢失修改
+		类似于svn代码覆盖。
+	读脏数据
+		修改了，被读，再撤销，就读到了脏数据
+	不可重复读
+		读，别人改，再读，就不一致了。
+	幻影读
+		读某个返回，别人在这个范围写，再读，就不一致了
+封锁
+	封锁粒度
+		mysql提供 行级锁，表级锁
+		锁越小 发生问题越少，但开销会大
+	锁类型
+		读写锁，排他锁(X写锁)，共享锁(S读锁)
+		锁的兼容性只有在读锁可以共享
+			x	s
+		x	NO  NO
+		s	NO	YES
+	意向锁
+	三级封锁协议
+	二级封锁协议
+	两端锁协议
+隔离级别
+	未提交读，事务中的修改，即使未提交，对其他事务也可读
+	提交读 提交了才能读，之前不可见
+	可重复读 多次读结果一致
+	可串行化 强制事务串行执行
+多版本并发控制 实现提交读和可重复读这两种隔离级别
+	版本号
+	undo日志
+	select
+	insert
+	delete
+	update
+范式
+	1NF<2NF<3NF<BCNF<4NF<5NF
+	1NF 列不可分 
+	2NF 不存在部分依赖 唯一性，不可把多种数据保存在同一张表中，一张表一种数据
+	3NF 不存在传递依赖 每一列都和主键直接相关，不能间接相关
+sql语句
+	select * from table;//查询
+	create database test;//创建数据库
+	create table tablename(id INT NOT NULL AUTO_INCREMENT,col1 INIT,PRIMARY KEY(`id`));
+	ALTER TABLE tablename ADD col CHAR(20);//添加列
+	ALTER TABLE tablename DROP COLUMN col;//删除列
+	DROP TABLE tablename;//删除表
+	insert into tablename(col1,col2) values(val1,val2);//插入数据
+	insert into tablename(col1,cole) select col1,col2 from tablename2;//插入检索出来的数据
+	create table newtable as select * from oldtable;//将一个表的内容插入到新表
+	update tablename set col = val where id = 1;//更新
+	delete from tablename where id = 1;//删除
+	truncate table tablename;//删除所有列，清空表
+	select distinct col1,col2,from tablename;//查询只出现一次
+	select * from tablename limit 5;//只返回前5行
+	select * from tablename limit 0,5;//只返回前5行
+	select * from tablename limit 2,3;//只返回第3~5行
+	select * from tablename order by col1 DESC,col2 ASC;//第一行降序，第二行升序
+	select * from tablename where col IS NULL;
+	where 后的条件 AND OR NOT IN  = < > (<> !=) (<= !>) (>= !<) BETWEEN IS NULL
+	通配符 
+		% >=0个任意字符
+		_ ==1个任意字符
+		[] 匹配集合内的字符用^可以对其否定
+		使用like进行匹配
+		select * from tablename where col like '[^AB]%';不以A和B开头的任意文本
+	计算字段
+		select col1 * col2 AS alias from tablename;取别名
+		SELECT CONCAT(TRIM(col1), '(', TRIM(col2), ')') AS concat_col FROM mytable;
+	函数
+		AVG 会忽略NULL行
+		COUNT
+		MAX
+		MIN 
+		SUM
+	分组
+		SELECT col, COUNT(*) AS num FROM mytable GROUP BY col; 
+	子查询
+		SELECT cust_name, (SELECT COUNT(*)FROM Orders WHERE Orders.cust_id = Customers.cust_id) AS orders_num FROM Customers ORDER BY cust_name;
+		SELECT * FROM mytable1 WHERE col1 IN(SELECT col2 FROM mytable2);
+	内连接
+		SELECT A.value, B.value FROM tablea AS A INNER JOIN tableb AS B ON A.key = B.key;
+		SELECT A.value, B.value FROM tablea AS A, tableb AS B WHERE A.key = B.key;
+	自连接
+		SELECT name FROM employee WHERE department = (SELECT department FROM employee WHERE name = "Jim");
+		SELECT e1.name FROM employee AS e1 INNER JOIN employee AS e2 ON e1.department = e2.department AND e2.name = "Jim";
+		SELECT A.value, B.value FROM tablea AS A NATURAL JOIN tableb AS B;
+		SELECT Customers.cust_id, Orders.order_num FROM Customers LEFT OUTER JOIN Orders ON Customers.cust_id = Orders.cust_id;
+	组合查询
+		SELECT col FROM mytable WHERE col = 1 UNION SELECT col FROM mytable WHERE col =2;
+	视图 虚拟的表，本身不包含数据
+		也就不能对其进行索引操作。
+		对视图的操作和对普通表的操作一样。
+		视图具有如下好处：
+			简化复杂的SQL操作，比如复杂的连接；
+			只使用实际表的一部分数据；
+			通过只给用户访问视图的权限，保证数据的安全性；
+			更改数据格式和表示
+		CREATE VIEW myview AS SELECT Concat(col1, col2) AS concat_col, col3*col4 AS compute_col FROM mytable WHERE col5 = val;
+	存储过程
+		一系列sql操作的批处理
+		好处
+			代码封装，保证了安全性
+			代码复用
+			预编译 很高性能
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

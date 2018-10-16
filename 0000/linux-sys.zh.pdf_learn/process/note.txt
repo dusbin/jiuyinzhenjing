@@ -7,4 +7,12 @@
 007 c代码中可以使用setenv设置 getenv获取，unsetenv删除name的定义
 008 进程状态，使用getrlimit setrlimit进行设置获取。cat /proc/self/limits ulimit -a
 009 fork的使用
+010 进程间通信，通过内核中开辟的一块缓冲区，一个写一个读
+011 pipe管道用于有血缘关系的进程之间 通过fork传递在用户看来就像是打开文件一样，filedes[0]读 filedes[1]写
+012 fifo有名管道 解决无血缘的进程通信
+013 内存共享映射
+014 进程间共享通信
+015 信号 kill -l
+
+
 32(42/179)
