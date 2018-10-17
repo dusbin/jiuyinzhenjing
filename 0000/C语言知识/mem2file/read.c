@@ -1,3 +1,4 @@
+//https://blog.csdn.net/mbshqqb/article/details/52825696
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -5,6 +6,31 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
+typedef struct {
+    char c;
+    int h;
+    short n;
+    long m;
+    float f;
+    double d1;
+    char s[20];
+    double d2;
+}st;
+void structRead(){
+    FILE *fp;
+    st sb;
+    fp=fopen("st.txt","r");
+    if(!fp)
+    {
+        printf("errror!\n");
+        exit(-1);
+    }
+    fread(&sb,sizeof(sb),1,fp);
+    printf("sb:c=%c,h=%d,n=%d,m=%d,f=%f,d1=%f,s=%s,d2=%f\n",sb.c,sb.h,sb.n,sb.m,sb.f,sb.d1,sb.s,sb.d2);
+    printf("sizeof(sb)=%d:&c=%x,&h=%x,&n=%x,&m=%x,&f=%x,&d1=%x,&s=%x,&d2=%x\n",sizeof(sb),&sb.c,&sb.h,&sb.n,&sb.m,&sb.f,&sb.d1,&sb.s,&sb.d2);
+       
+    fclose(fp);
+}
 void DataRead(){
 	FILE *fid;
 	fid = fopen("binary.dat","rb");
@@ -56,7 +82,8 @@ void DataRead(){
 int main(int argc, char *argv[])
 {
 	printf("begin\n");
-	DataRead();
+	//DataRead();
+	structRead();
 	printf("end\n");
 	return 0;
 }
