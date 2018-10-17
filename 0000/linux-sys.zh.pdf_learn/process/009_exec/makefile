@@ -1,5 +1,10 @@
-BIN=test
-BIN:
-	gcc -o $(BIN) test.c
+test:
+	gcc -o test test.c
+upper:
+	gcc -o upper upper.c
 clean:
-	rm -rf $(BIN)
+	rm -rf test upper
+help:
+	@echo "make upper"
+	@echo "make test"
+.PHONY:help test upper
