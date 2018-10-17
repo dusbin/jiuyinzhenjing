@@ -1,0 +1,133 @@
+本文通过汇总一些网上搜集到的资料，总结c语言中的memcpy实现
+背景
+想必大多数人在面试时被要求写 memcpy的实现，很不幸，我也吃过这个亏(这种题要是写的一塌糊涂后面完全没戏)，所以还是得提前准备一下，不然就只能呵呵了。先来看看一段错误的示范: 找茬：）
+
+    void * memcpy(void *dest, const void *src, unsigned int count);
+    {
+        if ((src == NULL) || (dest == NULL))
+            return;
+        
+        while (count--)
+            *dest++ = *src++;
+            
+        return dest;
+    }
+dest都指到哪里去了?怎么着也得备份一下dest的值，好让函数返回的指针是从头开始的
+考虑一下指针类型，如果dest和src的指针类型不一样，不能直接++赋值. 例如: int* p和 char*q， p++指针的值是4个4个加(0,4,8)，q++是1个1个加(0,1,2,3,4)
+第二版 - 定义两个临时变量,不要直接++ dest和src,并且指明指针类型char *
+
+    void *memcpy(void *dest, const void *src, size_t count)
+    {
+     char *tmp = dest;
+     const char *s = src;
+     
+     while (count--)
+      *tmp++ = *s++ ;
+      
+     return dest;
+    }
+能否改进? src和dest都强制转换成char*类型的指针，那么copy一定是一个字节一个字节的完成？那么第三版来了
+
+    void * memcpy(void *dst,const void *src,size_t num)
+    {
+    	int nchunks = num/sizeof(dst);   /*按CPU位宽拷贝*/
+    	int slice =   num%sizeof(dst);   /*剩余的按字节拷贝*/
+    	
+    	unsigned long * s = (unsigned long *)src;
+    	unsigned long * d = (unsigned long *)dst;
+    	
+    	while(nchunks--)
+    	    *d++ = *s++;
+    	    
+    	while (slice--)
+    	    *((char *)d++) =*((char *)s++);
+    	    
+    	return dst;
+    }
+看着没什么问题了，可是如果dst和src地址不对齐，copy效率岂不降低? 是否需要先处理一下地址不对齐的情况?
+再来看看dest和src地址有重叠的情况
+内存重叠问题是指目的地址的内存空间的首地址,包含在源内存空间中,这两段内存空间有了交集,因而在使用memcpy进行内存复制操作时,这段重叠的内存空间会被破坏.这种情况在应用程序级代码中一般不会出现的,而在驱动或内核级代码中要十分小心,尽量使用memmove函数.
+memcpy对内存空间有要求的,dest和src所指向的内存空间不能重叠,否则复制的数据是错误的.下面具体讲解一下这个错误是如何产生的.
+如果内存空间布局入下图所示:
+src所指向的内存空间后面部分数据被新拷贝的数据给覆盖了(也就是dest<=src+size).所以拷贝到最后,原来的数据肯定不是原来的数据,拷贝的数据也不是想要的数据,使用memcpy函数可以得到错误的结果.
+再者,如果内存空间布局入下图所示:
+虽然原来的数据不再是原来的数据(dest+size>=src),但拷贝的数据是原来的数据,使用memcpy函数可以得到正确的结果.因此,在使用memcpy这个函数之前,还需要做一个判断,如果dest<=src你才能使用这个函数不过完全没有必要, 解决办法，从高地址向地地址copy
+实例
+    void *memcpy(void *dest, const void *src, size_t count)
+    {
+     char *d;
+     const char *s;
+     
+     if (dest > (src+size)) || (dest < src))
+        {
+        d = dest;
+        s = src;
+        while (count--)
+            *d++ = *s++;        
+        }
+     else /* overlap */
+        {
+        d = (char *)(dest + count - 1); /* offset of pointer is from 0 */
+        s = (char *)(src + count -1);
+        while (count --)
+            *d-- = *s--;
+        }
+      
+     return dest;
+    }
+•memcpy是把src指向的对象中的size个字符拷贝到dest所指向的对象中,返回指向结果对象的指针. 
+•memmove也是把src指向的对象中的size个字符拷贝到dest所指向的对象中,返回指向结果对象的指针,但这两个函数在处理内存区域重叠的方式不同.
+注意memmove这个函数名称中有"move"这个单词,而实际上src处的数据仍然还在,并没有真的被"移动"了!这个函数名称有它的历史原因,是因为有了memcpy函数后,发现这个函数有问题,又发明了另一个没有问题的memcpy函数,但为了爆出兼容性依然保留了memcpy函数,而将新版本的memcpy函数改名为memmove函数.
+总结
+1. 不要破坏传进来的形参，定义新的临时变量来操作
+2.考虑指针的类型，不同类型的指针不能直接++赋值
+3.overlap情况下需要从高地址处向前copy
+Strcpy
+    /*******************************************************************************
+    *
+    * strcpy - copy one string to another (ANSI)
+    *
+    * This routine copies string <s2> (including EOS) to string <s1>.
+    *
+    * INCLUDE FILES: string.h
+    *
+    * RETURNS: A pointer to <s1>.
+    */
+     
+    char * strcpy
+        (
+        char *       s1,	/* string to copy to */
+        const char * s2	/* string to copy from */
+        )
+        {
+        char *save = s1;
+     
+        while (*s1 != '/0');
+
+        *s1++ = *s2++;
+
+        return (save);
+        }
+
+这个实现也是没有考虑overlap情况
+
+    char *strcpy(char *dst,const char *src)
+    {
+    	assert(dst != NULL);
+    	assert(src != NULL);
+    	char *ret = dst;
+    	memcpy(dst,src, strlen(src)+1); /* strlen确实不计算结尾的*/
+    	return ret;
+    }
+    int strlen (char *src)
+    {
+    int i=0;
+    while (*src++!='\0')
+        i++;
+    return i;
+    }
+--------------------- 
+作者：Tony363 
+来源：CSDN 
+原文：https://blog.csdn.net/goodwillyang/article/details/45559925?utm_source=copy 
+版权声明：本文为博主原创文章，转载请附上博文链接！
