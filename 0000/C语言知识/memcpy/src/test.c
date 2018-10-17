@@ -24,6 +24,25 @@ void* memcpy(void *dst, const void *src, size_t count){
     }
     return dst;
 }
+//最优
+void *mymemcpy(void *dst,const void *src,size_t num)
+{
+	assert((dst!=NULL)&&(src!=NULL));
+	int wordnum = num/4;//计算有多少个32位，按4字节拷贝
+	int slice = num%4;//剩余的按字节拷贝
+	int * pintsrc = (int *)src;
+	int * pintdst = (int *)dst;
+	while(wordnum--)*pintdst++ = *pintsrc++;
+	while (slice--)*((char *)pintdst++) =*((char *)pintsrc++);
+	return dst;
+}
+/*
+--------------------- 
+作者：xiaobo620 
+来源：CSDN 
+原文：https://blog.csdn.net/xiaobo620/article/details/7488827?utm_source=copy 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+*/
 //实现memmove库函数
 void* memmove(void *dst, const void *src, size_t count){
     // 容错处理
