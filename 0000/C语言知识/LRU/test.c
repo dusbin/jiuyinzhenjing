@@ -20,6 +20,25 @@ struct data{
 	int value;
 };
 struct data* g_list = NULL;
+void _add(struct data *input,struct data *pre,struct data *next){
+	pre->next = input;
+	input->pre = pre;
+	next->pre = input;
+	input->next = next;
+}
+void add_tail(struct data *input,struct data *head){
+	_add(input,head->pre,head);
+}
+void add_head(struct data *input,struct data *head){
+	_add(input,head,head->next);
+}
+void _del(struct data *pre,struct data *next){
+	pre->next = next;
+	next->pre = pre;
+}
+void del(struct data *tmp){
+	_del(tmp->pre,tmp->next);
+}
 void init_list(){
 	int i = N;
 	struct data* tmp;
@@ -34,13 +53,8 @@ void init_list(){
 			g_list = tmp;
 			tmp->line = -1;
 		}else{
-			tmp->next = add;
-			add->next = g_list;
-			g_list->pre = add;
-			add->pre = tmp;
-			tmp = tmp->next;
+			add_tail(add,g_list);
 		}
-		printf("111\n");
 		i--;
 	}while(i >= 0);
 }
@@ -59,14 +73,8 @@ void print_list(){
 	return;
 }
 void update_to_head(struct data *data){
-		struct data* tmp;
-		tmp = data;
-		tmp->pre->next = tmp->next;
-		tmp->next->pre = tmp->pre;		
-		tmp->next = g_list->next;
-		tmp->pre = g_list;
-		g_list->next->pre = tmp;
-		g_list->next = tmp;
+		del(data);
+		add_head(data,g_list);
 }
 int get_data_from_cache(int idx){
 	struct data * tmp;
@@ -87,14 +95,10 @@ int get_data_from_cache(int idx){
 }
 void update_from_file_to_cache(int i,int value){
 	struct data * tmp = g_list->pre;
-	g_list->pre = tmp->pre;
-	g_list->pre->next = g_list;
+	del(tmp);
 	tmp->line = i;
 	tmp->value = value;
-	g_list->next->pre = tmp;
-	tmp->next = g_list->next;
-	tmp->pre = g_list;
-	g_list->next = tmp;
+	add_head(tmp,g_list);
 }
 int main(){
 	int i = -1;
