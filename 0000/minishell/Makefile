@@ -1,10 +1,10 @@
 BIN=minishell
 OBJ=main.o parse.o
-BIN:$(OBJ)
-	gcc -o $(BIN) $(OBJ)
-main.o:
-	gcc -c main.c -L ./
-parse.o:
-	gcc -c parse.c -I ./
+CC=gcc
+CFLAGS=-Wall -g
+$(BIN):$(OBJ)
+	$(CC) $(CFLAGS) $^ -o $@
+%.o:%.c
+	$(CC) $(CFLAGS) -c $< -o $@
 clean:
 	rm -rf $(BIN) $(OBJ)
