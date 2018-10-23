@@ -1,0 +1,18 @@
+Nodejs笔记
+NPM使用
+http://www.runoob.com/nodejs/nodejs-npm.html
+npm -v 查看npm版本
+windows npm install npm -g 使用淘宝镜像  cnpm install npm -g
+安装npm模块  npm install <module name> e.g. npm install express
+npm install express          # 本地安装
+npm install express -g   # 全局安装
+如果出现以下错误：
+npm err! Error: connect ECONNREFUSED 127.0.0.1:8087 
+解决办法为：
+$ npm config set proxy null
+使用  在代码中写
+ver express = require('express');
+
+createServer
+
+http://192.168.191.1:8001/index.htm

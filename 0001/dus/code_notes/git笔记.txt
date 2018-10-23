@@ -1,0 +1,63 @@
+git使用手册
+壹 服务器搭建 centos7.4
+	1 .$ yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel #（安装编译git源码所需程序（其他系统apt-get install libcurl4-gnutls-dev libexpat1-dev gettext libz-dev libssl-dev））
+	2 .下载git源码 https://github.com/git/git
+	3 .$ make prefix=/usr/local all # 编译
+	4 .$ sudo make prefix=/usr/local install #安装
+	5 .创建git用户和组 
+		$ groupadd git 
+		$ useradd git -g git
+	6 .修改/etc/passwd git:x:503:503::/home/git:/bin/bash 为git:x:503:503::/home/git:/bin/git-shell 禁止git shell登录
+	7 .以git（su - git）用户执行 #生成私钥公钥
+		$ mkdir /home/git/.ssh
+		$ chmod 700 /home/git/.ssh
+		$ touch 700 /home/git/.ssh/authorized_keys
+		$ chmod 600 /home/git/.ssh/authorized_keys
+		$ 将客户端公钥添加到authorized_keys中（贰中第4步查询到的数据）
+		$ ssh-keygen -t rsa -C "youremail@example.com" #生成私钥
+	8 .root用户执行  #创建仓库
+		$ cd /srv
+		$ mkdir gitrepo
+		$ chown git:git gitrepo/
+		$ cd gitrepo
+		$ git init --bare project.git #创建仓库
+		$ chown -R git:git project.git #修改仓库属组
+	9. 服务器完成
+贰 客户端 windows
+	1 .安装Git-2.15.1.2-64-bit.exe
+	2 .git bash执行
+		$ git config --global user.name “用户名”
+		$ git config --global user.email “邮箱”
+	3 . $ ssh-keygen -t rsa #(直接回车，保存空密码)生成公钥（id_rsa.pub）和私钥(id_rsa)
+	4 . $ cat ~/.ssh/id_rsa.pub #查看公钥
+	5 .使用
+		$ git clone git@192.168.1.72:/srv/gitrepo/project.git #克隆项目到本地
+		$ git push origin master #上传服务器
+		$ git add . #添加所有文件 每一次提交都有执行，提交到暂缓区
+		$ git commit -m '注释' #提交到本地（暂缓区内容提交到当前分支），提交前先使用git status 查看修改内容是否是自己想提交的
+		$ git push origin master #提交到默认分支
+		$ git -rm #删除
+		$ git pull origin master #从默认分支下载
+		$ git branch -v #查看所有分支
+		$ git log --oneline # 查看所有日志，HEAD->master 是本地的版本，origin/master是服务器版本
+		$ git log 哈希值 #查看当前版本信息
+		$ git status #查看当前仓库的状态,那些文件被修改过
+		$ git diff filename #查看修改的具体信息
+		$ git reset --hard HEAD^ #HEAD是当前的版本
+		$ git reset --hard 哈希值 #回退到指定的版本
+		$ git reflog #命令历史查看
+		$ git checkout -- filename #把文件再工作区的修改全部撤销掉。没有添加到暂缓区的话，就回到了版本库状态，添加到暂缓区，就回到添加暂缓区状态
+								   #回到最近一次git commit或者git add状态
+		$ git reset HEAD filename # 把暂缓区的修改撤销掉
+		外话
+		git add(提交到暂缓区) 可以用checkout等回退
+		git commit(暂缓区提交到分支) 可以用版本回退。git reset HEAD filename ,checkout
+		git push(本地分支提交到远程服务器) 不可修改了，只能用覆盖
+	6 .后续使用
+	7 .使用TortoiseGit工具，commit提交之后不算完，还需执行push，才能到服务器上
+叁 参考资料：
+	a. https://git-scm.com/book/zh/v1/%E8%B5%B7%E6%AD%A5-%E5%AE%89%E8%A3%85-Git git源码安装
+	b. https://blog.csdn.net/martinwangjun/article/details/78780885 搭建git服务器
+	c. https://blog.csdn.net/salmonellavaccine/article/details/39349283 提交之前需要执行 git add .	
+	d. https://blog.csdn.net/u014470581/article/details/52780677 
+	e. https://blog.csdn.net/iefreer/article/details/7679631

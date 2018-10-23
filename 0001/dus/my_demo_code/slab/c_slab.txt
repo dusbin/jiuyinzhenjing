@@ -1,0 +1,10 @@
+接口设计 数据类型 void 需要自行转换，内存标记（已经free掉的不能再读） 
+struct {内存区域，use_list,free_list}
+接口：free(全局结构)
+ 1，创建 分配内存，传入区块大小和区块类型。
+-1，销毁，
+
+
+参考：类似于comm_socket_tcp_client_ops  des_decode_data
+
+unsigned int rss;/**< 实际内存*/

@@ -1,0 +1,3 @@
+go build filename.go 编译文件 生成 filename
+go run filename.go 直接运行代码
+执行 ./filename

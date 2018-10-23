@@ -1,0 +1,14 @@
+
+$Id: 00README,v 1.1 1999/05/29 18:57:58 biboman Exp $
+
+本目录存放 Firebird BBS 相关文件，请详细阅读各文件再安装系统。
+
+本目录档案内容说明：
+
+    Firebird-30		Firebird BBS 3.0 完整安装文件
+    Quick_Install	Firebird BBS 3.0 快速安装文件
+    Admin_Menual	管理者叁考手册
+    BBCall		B.B.Call 使用手册
+    Upgrading		Firebird BBS 3.0 Source 更新方式简介
+    TW_NewsGroup_List	台湾地区 News Group 列表
+    example/		BBS 相关设定范例档

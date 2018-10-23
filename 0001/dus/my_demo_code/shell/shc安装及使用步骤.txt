@@ -1,0 +1,11 @@
+solaris的与其他的略有不同
+解压： tar -zxvf shc-3.8.7.tgz
+cd shc-3.8.7
+编译shc
+gcc -o shc shc-3.8.7.c 生成shc
+
+使用：shc -x -T -rf  目标文件 生成源码文件 shc -T -rf其他系统
+每一次修改脚本源码需要删除对应的 filename.x.c filename.x 重新生成，
+filename.x 修改为filename拷贝到指定位置
+gcc -o install.sh.x install.sh.x.c 进行编译
+

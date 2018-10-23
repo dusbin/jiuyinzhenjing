@@ -1,0 +1,358 @@
+dnl ====================================================
+dnl configure.in for Firebird BBS 3.0 SM series
+dnl borrowed from SEEDNet BBS generation 1
+dnl $Id: configure.in,v 1.25 1999/09/10 00:31:11 edwardc Exp $
+dnl ====================================================
+dnl configure.in for SEEDNet BBS
+dnl configure.in,v 1.16 1999/04/04 00:34:32 edwardc Exp
+dnl ====================================================
+
+AC_REVISION($Revision: 1.25 $)
+AC_INIT("include/bbs.h")
+AC_CONFIG_HEADER("include/site_conf.h")
+
+echo "Firebird BBS 3.0 series configure $1"
+echo "\$Id: configure.in,v 1.25 1999/09/10 00:31:11 edwardc Exp $"
+
+dnl ------------------------------------------
+dnl ---- Checking C compiler              ----
+dnl ------------------------------------------
+echo " ........................... "
+echo " ... testing C Compiler  ... "
+echo " ........................... "
+
+AC_PROG_CC
+
+mCFLAGS="-O"
+DIRS="lib src"
+
+AC_PROG_INSTALL
+AC_ARG_ENABLE(lite,
+--enable-lite to active lite-package mode (FB 3.0), \
+x="Makefile src/Install.sh include/config.h include/chat.h", \
+x="Makefile src/Install.sh include/config.h include/chat.h util/innbbsd/Makefile util/mail2bbs/Makefile util/local_utl/Makefile")
+
+dnl -----------------------------------
+dnl checking avaliable libraries ..
+dnl -----------------------------------
+
+LIBS=""
+libCRYPT=""
+
+AC_HAVE_LIBRARY(crypt, libCRYPT="-lcrypt" LIBS="-lcrypt")
+AC_HAVE_LIBRARY(socket)
+AC_HAVE_LIBRARY(nsl)
+AC_HAVE_LIBRARY(bsd)
+AC_HAVE_LIBRARY(ucb)
+AC_HAVE_LIBRARY(rpcsvc)
+AC_HAVE_LIBRARY(dl)
+AC_HAVE_LIBRARY(termcap, , echo "ERR: i can't compile without libtermcap !!" ; exit )
+
+dnl -----------------------------------
+dnl checking functions (not done yet.)
+dnl -----------------------------------
+
+dnl AC_FUNC_STRFTIME
+dnl AC_FUNC_MMAP
+dnl AC_FUNC_GETLOADAVG
+
+dnl AC_CHECK_FUNC(rxstat)
+dnl AC_CHECK_FUNC(bzero)
+dnl AC_CHECK_FUNC(bcopy)
+
+dnl -----------------------------------
+dnl checking for external program
+dnl -----------------------------------
+
+AC_PATH_PROG(perl, perl, /usr/bin/perl, $PATH:/usr/bin:/usr/local/bin:/usr/sbin)
+AC_PATH_PROG(SENDMAIL, sendmail, /usr/sbin/sendmail, $PATH:/usr/lib:/usr/sbin)
+
+dnl ----- dummy code for testing libcrypt ----
+
+rm -f testcrypt.c
+
+cat > testcrypt.c << EOF
+/* generate by configure automaticlly */
+#include <stdio.h>
+#include <unistd.h>
+
+#define TSTR "I LoVe SUNnY cItY .."
+#define SALT "SunLight"	/* just test, ignore it */
+
+char *crypt();
+int main()
+{
+	char buf[[128]];
+
+	strcpy(buf, crypt(TSTR, SALT));
+
+	if ( buf[[0]] == '$' && buf[[1]] == '1' && buf[[2]] == '$' )
+		printf("MD5");
+	else if ( strlen(buf) == 13 )
+		printf("DES");
+	else 
+		printf("UNKNOWN");
+
+}
+
+EOF
+
+$CC -o tc testcrypt.c $libCRYPT
+ctype=`./tc`
+rm -fr testcrypt.c* tc
+
+if test -z $ctype; then
+	ctype="DES"
+fi
+
+echo "checking libcrypt type ... $ctype"
+
+dnl ------------------------------------------
+dnl ---- Checking system type             ----
+dnl ------------------------------------------
+
+echo " ........................... "
+echo " ... testing system type ... "
+echo " ........................... "
+
+AC_CANONICAL_SYSTEM
+
+objtarget="unknown"
+
+case ${target} in
+    *sun-sunos*)   
+        systype=SunOS
+        OS_DEF=""
+		objtarget="sun"
+        ;;      
+
+    *-solaris*) 
+        systype=Solaris
+        OS_DEF="-DSOLARIS -DSYSV -DTERMIOS"
+		LIBS="$LIBS -L/usr/ucblib -lucb"
+		objtarget="solaris"
+        ;;      
+
+	*-freebsd*)
+        systype=FreeBSD
+        OS_DEF="-DBSD44 -DTERMIOS"
+        mCFLAGS="-O2 -m486 -pipe"
+		objtarget="freebsd"
+		;;
+
+	*-netbsd*:*-bsdi*)
+        systype=NetBSD_OR_BSDI
+        OS_DEF="-DBSD44 -DTERMIOS"
+        mCFLAGS="-O2 -m486 -pipe"
+		objtarget="bsd"
+		;;
+
+    *hp-hpux*)     
+        systype=HP_UX
+        OS_DEF="-DHP_UX -DSYSV"
+		objtarget="hpux"
+        ;;     
+
+    *ibm-aix*)     
+        systype=IBM_AIX
+        OS_DEF="-DAIX -DSYSV"
+		objtarget="aix"
+        ;;     
+
+    *sgi-irix*)    
+        systype=SGI_IRIX
+        OS_DEF="-DIRIX -DSYSV -DTERMIOS"
+		objtarget="irix"
+        ;;     
+
+    *dec-osf*)     
+        systype=DEC_OSF
+        OS_DEF=""
+		objtarget="alpha"
+        ;;      
+
+    *-linux*)
+        systype=LINUX
+        OS_DEF="-DLINUX -DTERMIOS"
+        CC="gcc"
+        mCFLAGS="-O2"
+		objtarget="linux"
+        ;;
+
+    *)             
+        systype=UNKNOWN
+		objtarget="bsd"
+        ;;     
+esac
+
+CFLAGS="$mCFLAGS -Wunused -I../include"
+
+echo "platform type... $objtarget"
+
+dnl ------------------------------------------
+dnl    Asking about local BBS configuration 
+dnl ------------------------------------------
+changequote(<<,>>) dnl
+
+echo " .................................. "
+echo "   Please fill data for your BBS    "
+echo " .................................. "
+
+bbshome=`cd ~bbs ; pwd`
+echo -n "Home directory of BBS --> [$bbshome] "
+read BBS_HOME
+BBS_HOME=${BBS_HOME:-$bbshome}
+
+bbssrc=`pwd`
+echo -n "BBS Source Code directory --> [$bbssrc] "
+read BBSSRC
+BBSSRC=${BBSSRC:-$bbssrc}
+
+echo -n "UID of BBS --> [9999] " 
+read BBS_UID
+BBS_UID=${BBS_UID:-9999}
+
+echo -n "GID of BBS --> [99] " 
+read BBS_GID
+BBS_GID=${BBS_GID:-99}
+
+#echo -n "UID of BBS admin --> [9990] " 
+#read BBS_ADM
+#BBS_ADM=${BBS_ADM:-9990}
+
+echo -n "The ID of your site --> [NoName] "
+read BBS_ID
+BBS_ID=${BBS_ID:-NoName}
+
+echo -n "The name of your site --> [»ðÄñÏµÍ³ 3.0] "
+read BBS_CNAME
+
+BBS_CNAME=${BBS_CNAME:-"»ðÄñÏµÍ³ 3.0"}
+
+echo -n "The domain name of your site --> [some.where.on.earth] "
+read DOMAIN
+DOMAIN=${DOMAIN:-"some.where.on.earth"}
+
+echo -n "The ip address of your site --> [127.0.0.1] "
+read BBS_IP
+BBS_IP=${BBS_IP:-"127.0.0.1"}
+
+echo "The Default board of your site, only change it if upgrading "
+echo -n "from old system with different default board --> [sysop] "
+read DEFAULTBD
+DEFAULTBD=${DEFAULTBD:-"sysop"}
+
+echo -n "Maximum number of users --> [20236] "
+read MAXUSERS
+MAXUSERS=${MAXUSERS:-20236}
+
+echo -n "Maximum number of boards --> [256] "
+read MAXBOARD
+MAXBOARD=${MAXBOARD:-256}
+
+echo -n "Maximum number of on-line users --> [256] "
+read MAXACTIVE
+MAXACTIVE=${MAXACTIVE:-256}
+
+echo -n "Show idle time of BBS users ? --> [Y] "
+read ans
+case $ans in
+   [Nn]) xCSIE_DEF="" ;;
+      *) xCSIE_DEF="-DSHOW_IDLE_TIME -DWITHOUT_CHROOT" ;;
+esac
+
+echo -n "Make bbs users invisible (-DINVISIBLE) ? --> [N] "
+read ans
+case $ans in
+	[Yy]) CSIE_DEF="$xCSIE_DEF -DINVISIBLE" ;;
+	   *) CSIE_DEF=$xCSIE_DEF ;;
+esac
+
+echo "PLEASE CHOOSE THIS [1;5;31mCAREFULLY[m"
+echo -n "Is libcrypt \"$ctype\" correct? --> [Y] "
+read ans
+case $ans in
+	[Nn]) echo "That's ok, you have the last chance to modify \"config.h\" to change it" ;;
+	   *) ;;
+esac
+
+changequote([,]) dnl
+
+echo "........................................"
+
+dnl ---------------------------------------------------
+dnl ---- Substitute system configuration variables ----
+dnl ---------------------------------------------------
+
+AC_SUBST(systype)
+AC_SUBST(RPCSVC)
+AC_SUBST(OS_DEF)
+AC_SUBST(CC)
+AC_SUBST(CFLAGS)
+AC_SUBST(LIBS)
+AC_SUBST(OS_DEF)
+AC_SUBST(BBS_HOME)
+AC_SUBST(BBS_UID)
+AC_SUBST(BBS_GID)
+#AC_SUBST(BBS_ADM)
+AC_SUBST(CSIE_DEF)
+AC_SUBST(BBS_CNAME)
+AC_SUBST(BBS_ID)
+AC_SUBST(BBS_IP)
+AC_SUBST(DEFAULTBD)
+AC_SUBST(MAXUSERS)
+AC_SUBST(MAXBOARD)
+AC_SUBST(MAXACTIVE)
+AC_SUBST(perl)
+AC_SUBST(DIRS)
+AC_SUBST(objtarget)
+AC_SUBST(DOMAIN)
+AC_SUBST(ctype)
+AC_SUBST(BBSSRC)
+AC_SUBST(SENDMAIL)
+AC_SUBST(libCRYPT)
+
+dnl ------------------------------------------
+dnl ---- Output file                      ----
+dnl ------------------------------------------
+
+
+AC_OUTPUT($x)
+
+chmod 755 src/Install.sh
+
+echo "generating configure.inf"
+
+`rm -fr configure.inf`
+cat > configure.inf << EOF
+######################################################
+This file is generate by configure \$Revision: 1.25 $
+######################################################
+PERL=$perl
+BBS_ID=$BBS_ID
+DOMAIN=$DOMAIN
+CNAME=$BBS_CNAME
+DEFAULTBD=$DEFAULTBD
+BUILD_PLATFORM=$objtarget
+LIBCRYPT=$ctype
+EOF
+
+if [ test -f ".reldate" ]; then
+	echo "RELDATE=`cat .reldate`" >> configure.inf
+fi
+
+cat << EOF
+
+........................................................................
+You may review the Makefile now. Then, type 'make' to build your system.
+........................................................................
+
+EOF
+
+`rm -fr config.cache`
+`rm -fr config.log`
+`rm -fr config.status`
+
+dnl -------------------- 
+dnl END of configure.in
+dnl --------------------

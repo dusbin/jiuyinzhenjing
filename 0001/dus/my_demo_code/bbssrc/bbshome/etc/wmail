@@ -1,0 +1,42 @@
+
+[Chinese]
+
+	很抱歉, 我们寄出的认证信遭受送信主机的退信, 可能的原因如下:
+
+	
+	(1). 对方邮件主机没有回应或没有该位使用者
+
+	(2). 对方邮件主机 MX 设定错误
+
+	(3). 此位址是错误的或假造的
+
+	(4). 对方主机不接受来自本 BBS 的信件
+
+
+	请您先至个人资料里, 查明您所填的 E-Mail 位址, 并再设一次, 若有疑问请至
+	SYSOP 板查询
+
+
+													BBS 站 站务组敬启
+
+
+[English]
+
+	I'm Sorry, the registernation mail has been rejected by remot host, 
+	there's some possible reason:
+
+	(1). Remote host is down or no such user.
+
+	(2). Remote host have wrong MX record setting.
+
+	(3). This E-Mail address is incorrect.
+
+	(4). Remove host is denying the mail sent from this BBS
+
+
+	Please dobule check your e-mail address in "user-info", and try again,
+	if problem still exist, please post on SYSOP for debugging, tks!
+
+
+													Yours,
+													BBS Staff

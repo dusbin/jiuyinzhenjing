@@ -1,0 +1,30 @@
+﻿生成启动时间为 2018/8/7 16:02:10。
+     1>项目“E:\dus\branches\my_demo_code\center_storge\smbclient_win\smbclient_win\smbclient_win.vcxproj”在节点 2 上(build 个目标)。
+     1>InitializeBuildStatus:
+         正在创建“Debug\smbclient_win.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+       ClCompile:
+         所有输出均为最新。
+         D:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\smbclient_win.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt /FAu smbclient_win.cpp
+         smbclient_win.cpp
+     1>e:\dus\branches\my_demo_code\center_storge\smbclient_win\smbclient_win\smbclient_win.cpp(113): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 d:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : 参见“sprintf”的声明
+       ManifestResourceCompile:
+         所有输出均为最新。
+       Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\dus\branches\my_demo_code\center_storge\smbclient_win\Debug\smbclient_win.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\smbclient_win.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"E:\dus\branches\my_demo_code\center_storge\smbclient_win\Debug\smbclient_win.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\dus\branches\my_demo_code\center_storge\smbclient_win\Debug\smbclient_win.lib" /MACHINE:X86 Debug\smbclient_win.exe.embed.manifest.res
+         Debug\smbclient_win.obj
+         Debug\stdafx.obj
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\smbclient_win.exe.embed.manifest" /manifest Debug\smbclient_win.exe.intermediate.manifest
+         所有输出均为最新。
+       LinkEmbedManifest:
+         所有输出均为最新。
+         smbclient_win.vcxproj -> E:\dus\branches\my_demo_code\center_storge\smbclient_win\Debug\smbclient_win.exe
+       FinalizeBuildStatus:
+         正在删除文件“Debug\smbclient_win.unsuccessfulbuild”。
+         正在对“Debug\smbclient_win.lastbuildstate”执行 Touch 任务。
+     1>已完成生成项目“E:\dus\branches\my_demo_code\center_storge\smbclient_win\smbclient_win\smbclient_win.vcxproj”(build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:05.09

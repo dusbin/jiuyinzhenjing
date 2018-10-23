@@ -1,0 +1,18 @@
+libso配置文件采用json格式
+
+加入启动/停用功能（从配置文件中获取），配置文件维护(1.不存在文件时，程序自动获取生成默认的,2.手动刷新当前的配置到配置文件,3.手动添加删除配置文件) 
+是否被license授权(程序启动时从授权文件中获取)
+生产环境中默认libso状态(启用无license授权)
+配置文件(更改就生成md5值并记录到数据库，加载配置文件时进行验证)
+后续加入slab
+插件接口函数:主程序调用该函数，获取接口信息，一般包含暴露在外的接口函数，返回一个字符串信息(int func1(int,int),int func2(int,char)....)
+接口设计：获取接口信息，{int func1(int,int);int func2(char *,char *)}
+ini{
+	libso:{
+		libadd.so:0,
+		libsub.so:1,
+		libdiv.so:0,
+		libmul.so:0,
+	},
+},
+

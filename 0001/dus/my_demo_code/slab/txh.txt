@@ -1,0 +1,30 @@
+#include __HH_
+#define __HH_
+
+void* alloc_slab(uxsino_slab* slab,size_t malloc_size);
+void free_slab(uxsino_slab* slab,void* ptr);
+
+static struct uxsino_slab_ops g_uxsino_slab_op = {
+	.alloc_slab = alloc_slab,
+	.free_slab = free_slab,
+};
+
+int create_slab(uxsino_slab* slab,size_t max_num,size_t size);
+int release_slab(uxsino_slab* slab);
+
+
+uxsino_slab* create(size_t max_num,size_t size) {
+	uxsino_slab* slab = malloc();
+	slab->ops = &g_uxsino_slab_op;
+
+
+	return slab;
+}
+void release(uxsino_slab* slab);
+
+
+
+
+
+
+#endif

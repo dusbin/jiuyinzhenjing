@@ -1,0 +1,72 @@
+学习环境在ubuntu14.04.4 kernel版本是3.13.x
+1.学习chroot命令
+	chroot拷贝一份系统相关信息，调用不直接在根目录下的系统信息，构造一个安全的系统
+2.namespace （隔离出单独的空间）
+	类似于一个小黑箱，自己在自己的空间内玩耍，不影响其他的小黑箱。和chroot有点像。
+	namespace的api主要使用下面三个系统调用实现
+	clone(),unshare(),setns()
+	linux实现了6种namespace（Mount，UTS，IPC，PID，Network，User）
+	对应的系统调用参数（CLONE_NEWNS，CLONE_NEWUTS,CLONE_NEWIPC,CLONE_NEWPID,CLONE_NEWNET,CLONE_NEWUSER）
+	实现的内核版本（2.4.19,2.6.19,2.6.19,2.6.24,2.6.29,3.8）
+3.UTS_NAMESPACE验证
+	修改hostname不影响宿主机的hostname。
+4.IPC_NAMESPACE验证
+	a.在宿主机上执行ipcs -q查看ipc信息
+	b.执行ipcmk -Q创建一个ipc
+	c.再执行ipcs -q查看新建的ipc信息
+	d.在新的sh里运行代码在新的namespace里执行ipcs -q查看ipc信息，没有宿主机上创建的message queue信息，ipc隔离成功
+5.PID_NAMESPACE验证
+	a.需要打开两个shell
+	b.在宿主机上查看下进程树，找到真实的进程(pid)
+	c.在不同的shell里分别执行代码。并执行echo $$ 查看当前的namespace的pid，均为1。进行了pid的隔离。
+6.MOUNT_NAMESPACE验证
+	a.调用mount umount只会影响自己的命名空间，对全局的没有影响，功能和chroot相似，但是更加灵活安全
+	b.执行代码
+	c.在命名空间内执行ls /proc
+	d.执行mount -t proc proc /proc 将/proc mount到自己的命名空间
+	e.再执行ls /proc查看，少了很多的文件
+	f.可以使用ps查看进程了
+	g.mount操作并没有影响到外部。docker volume使用了这个特性。
+7.NETWORK_NAMESPACE验证
+	a.宿主机上执行ifconfig有网络信息
+	b.在程序中执行ifconfig没有任何信息，表明network隔离成功
+8.Linux Cgroups介绍，（限制各自的资源，不至于容器间资源相互竞争）
+	a.提供了对一组进程及子进程的资源限制、控制和统计的能力，资源包括CPU、内存、存储、网络等。可以实时监控进程和统计信息。
+	b.Cgroup三个组件
+		. cgroup
+		. subsystem 使用cgroup工具查看lssubsys -a（apt-get install cgroup-bin 安装）
+			blkio
+			cpu
+			cpuacct
+			cpuset
+			devices
+			freezer
+			memory
+			net_cls
+			net_prio
+			ns
+9.Lxc（Linux Container）
+10.Union File System(UnionFS) AUFS
+	a.把其他文件系统联合到一个联合挂载点的文件系统服务，实现每一次保存数据。如CD-ROM演示，和U盘共用，CD-ROM内容不变，修改的内容存于U盘。
+		CoW(写时复制)
+11.自己动手写AUFS
+	创建一个container层和四个layer层，将所有的mount到mnt上，然后向mnt/layer层写信息，全部存在container层，保存新的文件
+12.linux proc文件系统介绍
+	/proc文件系统是由内核提供的，包含了系统运行时信息（系统内存，mount设备信息，硬件配置等）只存在于内存中，
+	不占用外存空间。以文件的形式为访问内核数据的操作提供接口，如lsmod就是cat/proc/modules。/proc目录下有很多数字文件夹，这些文件是为每个进程创建的空间
+	如
+	 /proc/N PID为N的进程信息
+	 /proc/N/cmdline 进程启动命令
+	 /proc/N/cwd 链接到进程当前工作目录
+	 /proc/N/environ
+	 /proc/N/exe
+	 /proc/N/fd 包含进程相关的所有文件描述符
+	 /proc/N/maps
+13.实现run命令
+	git clone https://github.com/xianlubird/mydocker.git
+	直接export code-3.1代码
+	
+参考资料
+http://www.broadview.com.cn/book/5083
+https://github.com/xianlubird/mydocker/issues/3
+https://blog.csdn.net/shudaqi2010/article/details/53438040  chroot介绍

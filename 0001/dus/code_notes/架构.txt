@@ -1,0 +1,57 @@
+ALL{
+	init{
+		init_uuid{
+			g_uuid;
+		}
+		init_network{
+			g_net_list; >>write to text
+		}
+		init_route_table{
+			g_route_table; >>write to text
+		}
+	}
+	start{
+		get_net_list(g_net_list)
+		thread_init();//更新init配置文件等的信息，数据表。总的服务器端口地址表，服务器和网段映射表，
+		thread_montor();//系统使用监控，磁盘使用,cpu占用，网络占用，内存占用。不同的维度峰值不同的业务受阻
+		thread_stat(alive_count[知道已经在线的服务器个数],station_value[站点价值，提供服务的能力]);//对外界提供自己的状态。
+		thread_broadcast(g_net_list){
+			/*
+			 *网络智能维护，每台服务器最小符合，最大连接介入，没个电脑都是dns服务器
+			 */
+			update g_route_table;
+			update g_live_route_table;
+			find_samilar();//搜寻和自己相似的机器。
+			online_list();//ping指定端口，看是否或者
+		};
+		thread_proxy(){
+			do(recv_msg){
+				mesg == 1
+					dell_with_my_work();{,word id,workip:192.168.1.1/or id,cmd}
+				mesg == 2
+					del_work(workid)
+			};
+			do(send_msg){
+				i_want_to_find();{mesflag:1,workid,cmd:find -name dzb};
+				end_want();{mesgflag:2,workid}//向所有服务器发送结束服务的id
+			}
+		};
+		send_msg();
+		recv_msg();
+	}
+	stop{
+		destory();
+	}
+	status{
+	}
+	mng{
+	}
+}
+
+
+缺陷：服务器越多，可能会造成性能下降，做重复的工作，任务选择一个性能最好的机器发送，如cpu占用率低，站点距离近的
+
+慎用广播，不能让广播数据泛滥，只用来发现新的终端使用
+e.g. i want to math (1+2*3-4*7)*(1-2/3+5)
+类似于分治法：我将(1+2*3-4*7)和(1-2/3+5)作为要计算的内容发给其他计算机，只需获取他们返回的结果。
+以主机为单位的函数调用。不需要知道谁做了什么，只需要知道结果

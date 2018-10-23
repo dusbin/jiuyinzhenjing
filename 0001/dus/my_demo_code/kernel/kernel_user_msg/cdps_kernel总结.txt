@@ -1,0 +1,24 @@
+user 
+	open,read...,调用uxcdps的run1
+uxcdps
+	init(保存原有的系统调用,劫持系统调用open,read...)
+	exit(将保存的系统调用还原到系统调用表中)
+	run1(user使用open,read等相关命令,调用劫持的open,read...,
+		 劫持的函数向ux_access_ctrl模块发送权限验证请求run2，返回
+		 验证结果)
+ux_access_ctrl
+	init(初始化相应的强访自访规则)
+	exit(释放内存等)
+	run2(验证uxcdps run1的请求，返回正确的消息，根据结果产生相应的
+		 告警调用ux_interaction的send_to_user接口发送给ux_interaction模块run3)
+	run7(接收到run6的消息进行解包，设置对应的规则)
+ux_interaction
+	init(创建netlink通信线程,send,recv线程，消息处理队列等)
+	exit(回收资源)
+	run3(接收run2发送的消息，发送给agent的run4)
+	run6(接收run5发送的设置消息，发送给run7)
+agent
+	init(创建netlink通信相关线程，send,recv线程，消息处理队列等)
+	exit(回收netlink相关资源)
+	run4(接收run3发送的消息，写入日志)
+	run5(将web的设置信息发送给ux_interaction的run6)

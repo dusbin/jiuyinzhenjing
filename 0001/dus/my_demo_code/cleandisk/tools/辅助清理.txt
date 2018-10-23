@@ -1,0 +1,1 @@
+select * from clean_db where clean_file = '/opt/dus/branches/';查询删除的文件原来位置

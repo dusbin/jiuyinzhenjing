@@ -1,0 +1,37 @@
+Qt编码格式utf-8无bom
+watch -n 1 “ps -e | grep Lis ”
+监控线程  一秒执行一次 ps -e | grep lis
+debug信息查看  先打开debug开关，
+touch 1{a..z}快速创建文件
+ps -eo user,pid,ppid,stat,args
+ps -ef | wc -l 查看进程总数
+ps -A -ostat,ppid,pid,cmd | grep -e '^[Zz]' 查看僵尸进程
+ipcs -m 
+ipcrm -d shmid
+
+printf("0x%x\n", slab->m_mem_uns[i].p); 打印指针地址
+firewall-cmd --add-port=4611/tcp --permanent
+内核崩溃 在/var/crash/127.0.0.1-2017.10.26-14:59:07/vmcore-dmesg.txt中查看
+
+取冒号分割开的字符串最后一个
+awk:
+echo "1:3:5" | awk -F ":" '{print $NF}'
+sed:
+echo "1:3:5" | sed 's/.*:\([^:]*\)$/\1/'
+例子
+df / -h |grep / |grep %|awk -F '%' '{printf$1}' |awk -F ' ' '{print $NF}' 最后一个
+df / -h |grep / |grep %|awk -F '%' '{printf$1}' |awk -F ' ' '{print $(NF-1)}' 倒数第二个
+df / -h |grep / |grep %|awk -F '%' '{printf$1}' |awk -F ' ' '{print $(NF-2)}' 倒数第三个
+bash漏洞检测
+执行env x='() { :;}; echo vulnerable' bash -c 'echo This is a test'|grep 'vulnerable'
+返回值为vulnerable为不符合 为空为符合
+执行：cat /etc/shadow | grep -E "lp|sync|shutdown|halt|news|uucp|games|gopher|operator|daemon|bin|sys|adm|nuucp|lpd|imnadm|ipsec|ldap|snapp|invscout"
+查看结果是否包含 username:!*或者!! 包含符合 存在其他的不符合
+禁用账户 usermod -L username
+取消禁用账户 usermod -U username
+grep -w word 单词级过滤 区分duzhengbin和bin
+cat /boot/System.map-`uname -r` |grep " sys_call_table"|awk '{print $1}'  获取系统调用位置
+替换文本中的字符串PASSLENGTH=6为PASSLENGTH=8
+sed -e 's/PASSLENGTH=6/PASSLENGTH=8/g' /etc/default/passwd >/etc/default/passwd.bak && mv /etc/default/passwd.bak /etc/default/passwd
+shell脚本文末加rm $0 在执行完shell脚本后删除自身，注意：使用时必须在执行的目录下，如果目录有变化需要切换到脚本所在目录
+trap '' 1 2 3 15

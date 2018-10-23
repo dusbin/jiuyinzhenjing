@@ -1,0 +1,13 @@
+su - zz -c "echo \"umask 002\" >.bashrc"
+
+
+su - zz -c "cat .bashrc | grep -v umask > /tmp/.bashrc"
+su - zz -c "echo \"umask 002\" >> /tmp/.bashrc"
+su - zz -c "mv /tmp/.bashrc ."
+
+
+su - zz -c "cat .bashrc | grep -v umask > /tmp/.bashrc"
+su - zz -c "echo \"umask 022\" >> /tmp/.bashrc"
+su - zz -c "mv /tmp/.bashrc ."
+
+su - zz -c "umask"

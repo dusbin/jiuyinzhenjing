@@ -1,0 +1,62 @@
+$Id: 00README,v 1.5 1999/08/24 03:49:49 biboman Exp $
+
+in.zbbsd 是用来取代系统预设的 telnetd，可以在使用者 telnet 过来时自动
+login bbs，节省键入时间，也增进系统安全。
+
+以下介绍 in.zbbsd 的使用方法：
+
+  1.首先修改您的 kernel 设定，将 pty 增加到 256 个，并且确定您的 /dev
+    下有 256 个 pty 装置。
+
+  2.接着到 ~bbssrc/util/in.zbbsd 目录，修改 Makefile，选择适合您的 OS
+    的叁数，将 # 号拿掉，并将其他 OS 用的叁数以 # 注解掉。接下来修改
+    in.zbbsd.c，在 2543 行附近，修改您想要的 port 编号与个数，预设是
+    23, 3000, 3001, 3002 这四个，您可视需要增减。
+
+  3.接下来请打：make。如没遇到任何问题，目录下会多出一个 in.zbbsd 的
+    执行档，请把该档拷背到 /home/bbs/bin 目录下。
+
+  4.接下来请修改 /etc/inetd.conf，寻找以下的字串：
+ 
+      telnet    stream  tcp  nowait  root  /usr/libexec/telnetd  telnetd
+
+    把该行改成：
+
+      telnet1   stream  tcp  nowait  root  /usr/libexec/telnetd  telnetd
+
+    ※因作业系统不同，您看到的设定可能与上述设定不尽相同，请把握一个
+      原则，就是在第一个 telnet 後面加上 1 就对了。
+
+  5.接着修改 /etc/services，在适当位置加上：
+
+      telnet1      2000/tcp          # previous in.telnetd daemon
+
+    ※这行设定将您旧的 telnetd port 设到 2000，您可以自行修改您喜欢的
+      port 数字，建议往後面设，如 54321。
+
+  6.执行以下指令，找出 inetd 的 PID：
+
+      # ps aux |grep "inetd"
+
+    接着执行以下指令，就可重新起动 inetd (或重开机也可)：
+
+      # kill -HUP (PID) 
+
+  7.以 root 身份执行 /home/bbs/bin/in.zbbsd，接着 telnet 到您的主机，
+    看看是否正常执行，设定无误，您将会看到「连线中 ...」的字样，然後
+    出现 BBS 的登入画面；如果您看到「抱歉，客满了，请稍後再来。」，请
+    确定您的 pty 数目是否正确。
+
+  8.将 /home/bbs/bin/in.zbbsd 这行指令加到 /etc/rc.local 中，以後开机
+    就会自动执行。
+
+  9.FB3 的 in.zbbsd 加入新的机制，接受设定密码的 bbs 系统帐号, 在您测试
+    in.zbbsd 执行无误後，您可以替 bbs 帐号设定密码与安全的 login shell。
+	
+    BBS 未安装 in.zbbsd 前，bbs 帐号是无密码, shell 是 ~bbs/bin/bbsrf
+    安装好 in.zbbsd 後，您可替 bbs 帐号设定一个密码，并设定其 shell 为
+    系统认可的 shell (csh,tcsh,bash, etc) 或是安全的 shell (/noexistent,
+    /sbin/nologin, 等) 以增加系统安全。
+
+
+    Note: in.zbbsd for Firebird BBS 最原始版本从 Maple 2.39 移植过来。

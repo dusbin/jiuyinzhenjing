@@ -1,0 +1,28 @@
+进入VisualSVN的bin目录
+C:\Program Files\VisualSVN Server\bin>
+执行 svnadmin dump C:\Repositories\dus > C:\dus\dus_r1-r57.svn.bak
+增量备份： svnadmin dump C:\Repositories\dus -r 58:62 > C:\dus\dus_r58-r62.svn.bak
+右键->TortoiseSVN->Branch/tag	创建分支
+				 ->Merge		合并分支
+linux中SVN备份有三种方式
+1、svnadmin dump 是官方推荐的备份方式，优点是比较灵活，可以全量备份也可以增量备份，并提供版本恢复机制。
+缺点是版本数过大，增长到数万以上，那么dump与load过程都将非常慢，耗时长不利于快速进行灾难恢复。在版本数较小的情况下可以使用这种备份方式。
+2、svnadmin hotcopy 只能进行全量拷贝，不能进行增量备份。优点是备份较快，恢复也快。缺点是比较耗费硬盘。
+3、svnsync实际是制作2个镜像库，当一个坏了的时候可以迅速切换到另一个。需1.4以上版本支持，这里不讨论。
+svnadmin dump方式：
+1、全量备份一个仓库：
+#svnadmin dump /svn/svn/APP > /svn/svndump/APP_dump160802
+在另一台机器上配置同样的SVN服务器导入dump出来的备份文件
+#svnadmin load /svn/svn/APP < APP_dump160802
+将原先服务器的配置文件备份后复制到新服务器中 authz、passwd、svnserver.conf
+2、增量备份
+#svnadmin dump /svn/svn/APP -r 5200:5600 --incremental > /svn/svndump/APP_5600   
+5200是上次全量备份时的最新版本，5600是当前最新版本。
+导入：svnadmin load /svn/svn/APP < APP_5600
+svnadmin hotcopy方法:
+1. 备份
+svnadmin hotcopy /svn/svn/APP/ /data/svn.`date +%F:%T`.bak –clean-logs
+如果传递–clean-logs选项，svnadmin会执行热拷贝操作，然后删除不用的Berkeley DB日志文件。
+你可以在任何时候运行这个命令得到一个版本库的安全拷贝，不管其它进程是否使用这个版本库。
+2. 还原
+svnadmin hotcopy /home/svn.`date +%F:%T`.bak  /home/svn.`date +%F:%T`.bak

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html class=" js no-mobile desktop no-ie ff ff62 react16_introduction-section w-1920 gt-240 gt-320 gt-480 gt-640 gt-768 gt-800 gt-1024 gt-1280 gt-1440 gt-1680 no-portrait landscape gradient rgba opacity textshadow multiplebgs boxshadow borderimage borderradius no-cssreflections csstransforms csstransitions no-touch no-retina fontface domloaded" id="index-page"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>reveal.js</title>
+
+	<link rel="stylesheet" href="reveal.js_files/reveal.css">
+	<link rel="stylesheet" href="reveal.js_files/black.css">
+
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="reveal.js_files/zenburn.css">
+	<link rel="stylesheet" href="reveal.js_files/paper.css">
+	<link rel="stylesheet" href="reveal.js_files/custom.css">
+	<!-- Printing and PDF exports -->
+	<!-- <script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script> --><script type="text/javascript" src="reveal.js_files/marked.js"></script><script type="text/javascript" src="reveal.js_files/markdown.js"></script><script type="text/javascript" src="reveal.js_files/notes.js"></script><script type="text/javascript" src="reveal.js_files/highlight.js"></script>
+</head>
+
+<body>
+	<div class="reveal slide center has-vertical-slides has-horizontal-slides ready" role="application" data-transition-speed="default" data-background-transition="fade">
+		<div class="slides" style="width: 960px; height: 700px; left: 50%; top: 50%; bottom: auto; right: auto; transform: translate(-50%, -50%) scale(1.25623);">
+			<section style="top: 0px; display: block;" class="stack present" data-previous-indexv="0">
+				<section style="top: 270.5px; display: block;" class="present">
+					<h6>WEB团队内部分享交流会</h6>
+					<p class="fs-22">作者：@Hfimy</p>
+				</section>
+				<section class="future" style="top: 295px; display: block;" aria-hidden="true" hidden="">
+					<h4>进步始于交流，收获源于分享</h4>
+				</section>
+				<!-- <section>
+					<h4>主题：WEB技术分享与交流</h4>
+					<h4>时间：周五16：00 - 17：00</h4>
+				</section>
+				<section>
+					<h4 class='ta-l'>会议章程</h4>
+					<ol>
+						<li>主讲人分享技术心得等，30分钟左右</li>
+						<li>组员依次提出本周遇到的技术问题，20分钟左右</li>
+						<li>暂定为自由讨论，10分钟左右</li>
+					</ol>
+				</section> -->
+			</section>
+			<section style="top: 302.5px; display: block;" class="future" aria-hidden="true" hidden="">
+				进入主题
+			</section>
+			<section data-markdown="" data-markdown-parsed="true" style="top: 119px; display: block;" class="future" aria-hidden="true" hidden=""><p></p><p class="ta-c">浅谈React16新特性</p><p></p>
+<ul>
+<li>error boundaries</li>
+<li>portals</li>
+<li>render方法新增返回类型</li>
+<li>支持自定义DOM属性</li>
+<li>更好的服务器端渲染</li>
+<li>新的打包策略<!-- * MIT许可和新的核心架构 -->
+</li>
+</ul>
+</section>
+			<section style="top: 0px; display: none;" class="stack future" data-previous-indexv="0" aria-hidden="true" hidden="">
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 81.5px; display: none;" aria-hidden="true" hidden=""><p></p><p class="ta-c">Better Error Handling</p>
+  之前，组件渲染过程中的运行时错误可能会使应用处于故障状态，产生隐蔽的错误消息并需要刷新页面才能恢复。为了解决这个问题，React16 
+使用更灵活的错误处理策略。默认情况下，如果在组件的渲染或生命周期方法中引发错误，将会从根节点卸载整个组件树。这可以防止显示损坏的数据，但是，这可
+能不是理想的用户体验。<p></p>
+</section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 228px; display: none;" aria-hidden="true" hidden=""><p>部分UI中的JavaScript错误不应该破坏整个应用程序。为了解决这个问题，React16 引入了error boundaries，中文译为"错误边界"的新概念。</p>
+</section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 228px; display: none;" aria-hidden="true" hidden=""><p>错误边界是一种特殊的React组件，可以在其子组件树中的任何位置捕获JavaScript错误，记录这些错误并显示回退UI，而不是崩溃的组件树。</p>
+</section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 217.5px; display: none;" aria-hidden="true" hidden=""><p></p><p>React16 新增生命周期：<code>componentDidCatch</code></p>
+如果一个类组件定义了该生命周期方法，它将成为一个错误边界。<p></p>
+</section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 105px; display: none;" aria-hidden="true" hidden=""><pre><code class="hljs scala"><span class="hljs-comment">// 最佳实践</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ErrorBoundary</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+    state = {
+      hasError: <span class="hljs-literal">false</span>
+    };
+    componentDidCatch(error, info) {
+      <span class="hljs-keyword">this</span>.setState({ hasError: <span class="hljs-literal">true</span> });
+    }
+    render() {
+      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.state.hasError) {
+        <span class="hljs-keyword">return</span> &lt;h1&gt;<span class="hljs-type">Something</span> went wrong.&lt;/h1&gt;;
+      }
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.props.children;
+    }
+}
+</code></pre></section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 249.5px; display: none;" aria-hidden="true" hidden=""><pre><code class="hljs javascript"><span class="hljs-comment">// 作为常规组件使用</span>
+&lt;ErrorBoundary&gt;
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">App</span> /&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">ErrorBoundary</span>&gt;</span></span>
+</code></pre></section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 81.5px; display: none;" aria-hidden="true" hidden=""><p class="ta-c">Portals</p>
+<p>  Portals，中文可以理解为"传送门"，提供了一种一流的方法来将子组件渲染到父组件的 DOM 
+结构之外的DOM节点中。默认情况下，React组件树和DOM树是完全对应的，对于一些 Modal , Overlay 
+之类的组件实现，通常是将它们放在顶层，但逻辑上它们可能只是属于某个子组件，这不利于组件的结构组织。</p>
+</section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 291px; display: none;" aria-hidden="true" hidden=""><pre><code class="hljs less"><span class="hljs-selector-tag">ReactDOM</span><span class="hljs-selector-class">.createPortal</span>(child, container)
+</code></pre></section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 173px; display: none;" aria-hidden="true" hidden=""><p>通过使用 <code>React.createPortal</code> ，我们可以将组件渲染到我们想要的任意DOM节点中，但它依然存在于React树中。因此，该组件的行为与其它普通组件相似，在portal内部触发的事件也将传播到父组件。对于组件划分来说，这是一个很棒的特性。</p>
+</section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 245.5px; display: none;" aria-hidden="true" hidden=""><p></p><p class="ta-c">New render return types</p>
+React16 添加了新的返回类型：fragments and strings<p></p>
+</section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 71px; display: none;" aria-hidden="true" hidden=""><ul>
+<li>fragments
+<br>
+React16 支持在组件的render方法中返回一组元素。与其它数组一样，需要为每个元素添加一个唯一的key值以避免警告：<pre><code class="hljs maxima">render() {
+  // No need to wrap list items <span class="hljs-keyword">in</span> an extra element!
+  <span class="hljs-built_in">return</span> [
+    // Don't <span class="hljs-built_in">forget</span> the keys 
+    &lt;<span class="hljs-built_in">li</span> <span class="hljs-built_in">key</span>=<span class="hljs-string">"A"</span>&gt;First item&lt;/<span class="hljs-built_in">li</span>&gt;,
+    &lt;<span class="hljs-built_in">li</span> <span class="hljs-built_in">key</span>=<span class="hljs-string">"B"</span>&gt;Second item&lt;/<span class="hljs-built_in">li</span>&gt;,
+    &lt;<span class="hljs-built_in">li</span> <span class="hljs-built_in">key</span>=<span class="hljs-string">"C"</span>&gt;Third item&lt;/<span class="hljs-built_in">li</span>&gt;,
+  ];
+}
+</code></pre></li>
+</ul>
+</section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 115.5px; display: none;" aria-hidden="true" hidden=""><p>从React16.2.0 开始，进一步提高对 JSX特殊片段语法的支持。</p>
+<pre><code class="hljs javascript">render() {
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">ChildA</span> /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">ChildB</span> /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">ChildC</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/&gt;</span>
+    );
+}
+</span></code></pre></section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 209px; display: none;" aria-hidden="true" hidden=""><ul>
+<li>string
+<br>
+React16 支持在组件的render方法中返回字符串：<pre><code class="hljs stata">render() {
+  <span class="hljs-keyword">return</span> 'Look <span class="hljs-keyword">ma</span>, <span class="hljs-keyword">no</span> spans!';
+}
+</code></pre></li>
+</ul>
+</section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 91.5px; display: none;" aria-hidden="true" hidden=""><p class="ta-l">所有支持的完整返回类型列表：</p>
+
+<ul>
+<li>react elements (jsx)</li>
+<li>string</li>
+<li>numbers</li>
+<li>booleans</li>
+<li>null</li>
+<li>fragments</li>
+<li>portals</li>
+</ul>
+</section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 191px; display: none;" aria-hidden="true" hidden=""><p></p><p class="ta-c">Support for custom DOM attributes</p>
+  在之前的版本中，React会忽略无法识别的HTML和SVG属性，如果您使用React无法识别的属性编写JSX，则React将跳过它。<p></p>
+</section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 192px; display: none;" aria-hidden="true" hidden=""><pre><code class="hljs stylus"><span class="hljs-comment">// Your code:</span>
+&lt;<span class="hljs-selector-tag">div</span> mycustomattribute=<span class="hljs-string">"something"</span> /&gt;
+</code></pre><pre><code class="hljs stylus"><span class="hljs-comment">// React 15 output:</span>
+&lt;<span class="hljs-selector-tag">div</span> /&gt;
+</code></pre><pre><code class="hljs stylus"><span class="hljs-comment">// React 16 output:</span>
+&lt;<span class="hljs-selector-tag">div</span> mycustomattribute=<span class="hljs-string">"something"</span> /&gt;
+</code></pre></section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 228px; display: none;" aria-hidden="true" hidden=""><p>现在，React16 不再忽略无法识别的HTML和SVG属性，而将它们直接传递给DOM。这个改动让React去掉了大部分的属性白名单，从而减小了文件大小。</p>
+</section>
+				<!-- <section data-markdown class='ta-l'>
+					<script type='text/template'>
+						<p>注意，您仍然应该使用规范的React命名来获取已知属性。</p>
+					</script>
+				</section> -->
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 163.5px; display: none;" aria-hidden="true" hidden=""><p></p><p class="ta-c">Better server-side rendering</p>
+  React16 包含一个完全重写的SSR。新的实现非常快，接近3倍性能于React15 ，现在提供一种流模式streaming，可以更快地把渲染的字节发送到客户端。<p></p>
+</section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 119px; display: none;" aria-hidden="true" hidden=""><p>另
+外，React16 在hydrating ( 
+注：指客户端基于服务器返回的HTML再次重新渲染）方面表现的更好，它不再要求初始渲染与服务器的结果完全匹配。相反，它会尝试尽可能多地重用现有的
+DOM。没有更多的校验和！一般来说，不建议在服务器和客户端渲染不同的内容，但在某些情况下（如时间戳）可能会有用。</p>
+</section>
+				<section data-markdown="" class="ta-l past" data-markdown-parsed="true" style="top: 81.5px; display: none;" aria-hidden="true" hidden=""><p></p><p class="ta-c">Reduced file size</p>
+  React16 的体积比上个版本减小了32% <p></p>
+<ul>
+<li>react is 5.3 kb (2.2 kb gzipped), down from 20.7 kb (6.9 kb gzipped).</li>
+<li>react-dom is 103.7 kb (32.6 kb gzipped), down from 141 kb (42.9 kb gzipped).</li>
+<li>react + react-dom is 109 kb (34.8 kb gzipped), down from 161.7 kb (49.8 kb gzipped).</li>
+</ul>
+</section>
+				<section data-markdown="" class="ta-l" data-markdown-parsed="true" style="top: 228px; display: none;" aria-hidden="true"><p>React体积的减小由于使用了新的打包策略，现在去掉了process.env检查，并且使用Rollup作为打包工具。</p>
+</section>
+				<!-- <section data-markdown>
+					<script type='text/template'>
+						<p class='ta-c'>Fiber</p>
+						<p class='ta-l'>&emsp;&emsp;React 16采用了新的核心架构 " Fiber " ,Facebook官方声称：Fiber是对核心算法的一次重新实现，我们改写了React。</p>
+					</script>
+				</section> -->
+			</section>
+			<section style="top: 0px; display: none;" class="stack future" data-previous-indexv="0" aria-hidden="true" hidden="">
+				<section data-markdown="" data-markdown-parsed="true" style="top: 146px; display: none;" class="" aria-hidden="true"><p></p><p class="ta-c">扩展</p><p></p>
+<ul>
+<li>组件生命周期变更</li>
+<li>createRef API</li>
+<li>forwardRef API</li>
+<li>Official Context API</li>
+<li>StrictMode Component</li>
+</ul>
+</section>
+			</section>
+			<section style="top: 0px; display: none;" class="stack future" data-previous-indexv="0" aria-hidden="true" hidden="">
+				<section data-markdown="" data-markdown-parsed="true" style="top: 245.5px; display: none;" class="" aria-hidden="true"><p class="ta-c">组件生命周期变更</p>
+<p class="ta-c">未来的React版本将启用异步渲染更新</p>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 198.5px; display: none;" hidden=""><p></p><p class="ta-l">* 16.3：添加3个UNSAFE前缀的生命周期</p><p></p>
+<pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">UNSAFE_componentWillMount</span><span class="hljs-params">()</span></span>{}
+
+<span class="hljs-function"><span class="hljs-title">UNSAFE_componentWillReceiveProps</span><span class="hljs-params">(nextProps)</span></span>{}
+
+<span class="hljs-function"><span class="hljs-title">UNSAFE_componentWillUpdate</span><span class="hljs-params">(nextProps,nextState)</span></span>{}
+</code></pre></section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 198.5px; display: none;" hidden=""><p></p><p class="ta-l">* 未来的16.x版本：将对以下生命周期启用弃用警告</p><p></p>
+<pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">componentWillMount</span><span class="hljs-params">()</span></span>{}
+
+<span class="hljs-function"><span class="hljs-title">componentWillReceiveProps</span><span class="hljs-params">(nextProps)</span></span>{}
+
+<span class="hljs-function"><span class="hljs-title">componentWillUpdate</span><span class="hljs-params">(nextProps,nextState)</span></span>{}
+</code></pre></section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p></p><p class="ta-l">* 17.0：删除以下生命周期</p><p></p>
+<pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">componentWillMount</span><span class="hljs-params">()</span></span>{}
+
+<span class="hljs-function"><span class="hljs-title">componentWillReceiveProps</span><span class="hljs-params">(nextProps)</span></span>{}
+
+<span class="hljs-function"><span class="hljs-title">componentWillUpdate</span><span class="hljs-params">(nextProps,nextState)</span></span>{}
+</code></pre></section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><ul>
+<li>新增生命周期：static getDerivedStateFromProps<pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Example</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  static getDerivedStateFromProps(nextProps, prevState) {
+    <span class="hljs-comment">// ...</span>
+  }
+}
+</code></pre></li>
+</ul>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p class="ta-l"> 
+ The new static getDerivedStateFromProps lifecycle is invoked after a 
+component is instantiated as well as when it receives new props. It can 
+return an object to update state, or null to indicate that the new props
+ do not require any state updates.</p>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p class="ta-l">  Together with componentDidUpdate, this new lifecycle should cover all use cases for the legacy componentWillReceiveProps.</p>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><ul>
+<li>新增生命周期： getSnapshotBeforeUpdate<pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Example</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    <span class="hljs-comment">// ...</span>
+  }
+}
+</code></pre></li>
+</ul>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p class="ta-l"> 
+ The new getSnapshotBeforeUpdate lifecycle is called right before 
+mutations are made (e.g. before the DOM is updated). The return value 
+for this lifecycle will be passed as the third parameter to 
+componentDidUpdate. (This lifecycle isn’t often needed, but can be 
+useful in cases like manually preserving scroll position during 
+rerenders.)</p>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p class="ta-l">  Together with componentDidUpdate, this new lifecycle should cover all use cases for the legacy componentWillUpdate.</p>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p class="ta-c">createRef API</p>
+<p class="ta-l">  Previously, React provided two ways of managing refs: 
+the legacy string ref API and the callback API. Although the string ref 
+API was the more convenient of the two, it had several downsides and so 
+our official recommendation was to use the callback form instead.</p>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p class="ta-l">  Version 16.3 adds a new option for managing refs that offers the convenience of a string ref without any of the downsides:</p>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyComponent</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+    constructor(props) {
+      <span class="hljs-keyword">super</span>(props);
+
+      <span class="hljs-keyword">this</span>.inputRef = <span class="hljs-type">React</span>.createRef();
+    }
+
+    render() {
+      <span class="hljs-keyword">return</span> &lt;input <span class="hljs-class"><span class="hljs-keyword">type</span></span>=<span class="hljs-string">"text"</span> ref={<span class="hljs-keyword">this</span>.inputRef} /&gt;;
+    }
+
+    componentDidMount() {
+      <span class="hljs-keyword">this</span>.inputRef.current.focus();
+    }
+}
+</code></pre></section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p class="ta-c">forwardRef API</p>
+<p class="ta-l">  Generally, React components are declarative, but 
+sometimes imperative access to the component instances and the 
+underlying DOM nodes is necessary. This is common for use cases like 
+managing focus, selection, or animations. React provides refs as a way 
+to solve this problem. However, component encapsulation poses some 
+challenges with refs.</p>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p class="ta-l">  For example, if you replace a <code>&lt;button&gt;</code> with a custom <code>&lt;FancyButton&gt;</code>
+ component, the ref attribute on it will start pointing at the wrapper 
+component instead of the DOM node (and would be null for functional 
+components). While this is desirable for “application-level” components 
+like FeedStory or Comment that need to be encapsulated, it can be 
+annoying for “leaf” components such as FancyButton or MyTextInput that 
+are typically used like their DOM counterparts, and might need to expose
+ their DOM nodes.</p>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p class="ta-l"> 
+ Ref forwarding is a new opt-in feature that lets some components take a
+ ref they receive, and pass it further down (in other words, “forward” 
+it) to a child. In the example below, FancyButton forwards its ref to a 
+DOM button that it renders:</p>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> FancyButton = React.forwardRef(<span class="hljs-function">(<span class="hljs-params">props, ref</span>) =&gt;</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">{ref}</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"FancyButton"</span>&gt;</span>
+      {props.children}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
+));
+
+<span class="hljs-comment">// You can now get a ref directly to the DOM button:</span>
+<span class="hljs-keyword">const</span> ref = React.createRef();
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">FancyButton</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">{ref}</span>&gt;</span>Click me!<span class="hljs-tag">&lt;/<span class="hljs-name">FancyButton</span>&gt;</span></span>;
+</code></pre></section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p class="ta-l"> 
+ This way, components using FancyButton can get a ref to the underlying 
+button DOM node and access it if necessary—just like if they used a DOM 
+button directly.Ref forwarding is not limited to “leaf” components that 
+render DOM nodes. If you write higher order components, we recommend 
+using ref forwarding to automatically pass the ref down to the wrapped 
+class component instances.</p>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p class="ta-c">Official Context API</p>
+<p class="ta-l">  For many years, React has offered an experimental API 
+for context. Although it was a powerful tool, its use was discouraged 
+because of inherent problems in the API, and because we always intended 
+to replace the experimental API with a better one.</p>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p class="ta-l"> 
+ Version 16.3 introduces a new context API that is more efficient and 
+supports both static type checking and deep updates.Here is an example 
+illustrating how you might inject a “theme” using the new context API:</p>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><pre><code class="hljs scala">const <span class="hljs-type">ThemeContext</span> = <span class="hljs-type">React</span>.createContext(<span class="hljs-symbol">'ligh</span>t');
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ThemeProvider</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  state = { theme: <span class="hljs-symbol">'ligh</span>t' };
+  render() {
+    <span class="hljs-keyword">return</span> (
+      &lt;<span class="hljs-type">ThemeContext</span>.<span class="hljs-type">Provider</span> value={<span class="hljs-keyword">this</span>.state.theme}&gt;
+        {<span class="hljs-keyword">this</span>.props.children}
+      &lt;/<span class="hljs-type">ThemeContext</span>.<span class="hljs-type">Provider</span>&gt;
+    );
+  }
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ThemedButton</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> (
+      &lt;<span class="hljs-type">ThemeContext</span>.<span class="hljs-type">Consumer</span>&gt;
+        {theme =&gt; &lt;<span class="hljs-type">Button</span> theme={theme} /&gt;}
+      &lt;/<span class="hljs-type">ThemeContext</span>.<span class="hljs-type">Consumer</span>&gt;
+    );
+  }
+}
+</code></pre></section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p class="ta-c">StrictMode Component</p>
+<p class="ta-l">  StrictMode is a tool for highlighting potential 
+problems in an application. Like Fragment, StrictMode does not render 
+any visible UI. It activates additional checks and warnings for its 
+descendants.</p>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p class="ta-l"> 
+ Although it is not possible for strict mode to catch all problems (e.g.
+ certain types of mutation), it can help with many. If you see warnings 
+in strict mode, those things will likely cause bugs for async rendering.</p>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p></p><p class="ta-l">In version 16.3, StrictMode helps with:</p><p></p>
+<ul>
+<li>Identifying components with unsafe lifecycles</li>
+<li>Warning about legacy string ref API usage</li>
+<li>Detecting unexpected side effects</li>
+</ul>
+</section>
+				<section data-markdown="" data-markdown-parsed="true" class="future" aria-hidden="true" style="top: 350px; display: none;" hidden=""><p class="ta-l">StrictMode checks are run in development mode only; they do not impact the production build.</p>
+</section>
+			</section>
+			<section style="top: 279.5px; display: none;" class="future" aria-hidden="true" hidden="">
+				<h2>
+					Thank you !
+				</h2>
+			</section>
+		</div>
+	<div class="backgrounds"><div class="slide-background stack present" style="display: block;" data-loaded="true"><div class="slide-background present" style="display: block;" data-loaded="true"></div><div class="slide-background future" style="display: block;" data-loaded="true"></div></div><div class="slide-background future" style="display: block;" data-loaded="true"></div><div class="slide-background future" style="display: block;" data-loaded="true"></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l past" style="display: none;" data-loaded="true"></div><div class="slide-background ta-l present" style="display: none;" data-loaded="true"></div></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background present" style="display: none;" data-loaded="true"></div></div><div class="slide-background stack future" style="display: none;" data-loaded="true"><div class="slide-background present" style="display: none;" data-loaded="true"></div><div class="slide-background future" style="display: none;" data-loaded="true"></div><div class="slide-background future" style="display: none;" data-loaded="true"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div><div class="slide-background future" style="display: none;"></div></div><div class="slide-background future" style="display: none;" data-loaded="true"></div></div><div class="progress" style="display: block;"><span style="width: 0px;"></span></div><aside class="controls" style="display: block;" data-controls-layout="bottom-right" data-controls-back-arrows="faded"><button class="navigate-left" aria-label="previous slide" disabled="disabled"><div class="controls-arrow"></div></button><button class="navigate-right enabled" aria-label="next slide"><div class="controls-arrow"></div></button><button class="navigate-up" aria-label="above slide" disabled="disabled"><div class="controls-arrow"></div></button><button class="navigate-down enabled" aria-label="below slide"><div class="controls-arrow"></div></button></aside><div class="slide-number" style="display: none;"></div><div class="speaker-notes" data-prevent-swipe="" tabindex="0"></div><div class="pause-overlay"></div><div style="position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px);" id="aria-status-div" aria-live="polite" aria-atomic="true">
+					WEB团队内部分享交流会
+					作者：@Hfimy
+				</div></div>
+
+	<script src="reveal.js_files/head.js"></script>
+	<script src="reveal.js_files/reveal.js"></script>
+
+	<script>
+		// More info about config & dependencies:
+		// - https://github.com/hakimel/reveal.js#configuration
+		// - https://github.com/hakimel/reveal.js#dependencies
+		Reveal.initialize({
+			dependencies: [
+				{ src: 'plugin/markdown/marked.js' },
+				{ src: 'plugin/markdown/markdown.js' },
+				{ src: 'plugin/notes/notes.js', async: true },
+				{ src: 'plugin/highlight/highlight.js', async: true, callback: function () { hljs.initHighlightingOnLoad(); } }
+			]
+		});
+	</script>
+
+
+</body></html>

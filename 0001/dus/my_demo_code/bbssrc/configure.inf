@@ -1,0 +1,11 @@
+######################################################
+This file is generate by configure $Revision: 1.25 $
+######################################################
+PERL=/usr/bin/perl
+BBS_ID=NoName
+DOMAIN=test.dus
+CNAME=dus
+DEFAULTBD=sysop
+BUILD_PLATFORM=bsd
+LIBCRYPT=DES
+RELDATE=19991003-SNAP

@@ -1,0 +1,14 @@
+malloc失败时，有一定的原因是在malloc之前存在内存访问越界等的问题，排查之前内存是否使用不当
+proc/net/dev linux中网卡流量信息
+判断操作系统是32位还是64位
+/etc/profile中增加ulimit -S -c unlimited > /dev/null2>&1 打开core日志 source /etc/profile
+#include <stdio.h>
+int main(int argc  ,char* argv)
+{
+   #ifdef __x86_64__
+         printf("__x86_64__");
+   #elif __i386__
+         printf("__i386__");
+   #endif
+   return 0;
+}

@@ -1,0 +1,18 @@
+[
+	{
+		"id": 1,
+		"moudles": "./libadd.so"
+	},
+	{
+		"id": 2,
+		"moudles": "./libsub.so"
+	},
+	{
+		"id": 3,
+		"moudles": "./libmul.so"
+	},
+	{
+		"id": 4,
+		"moudles": "./libdiv.so"
+	}
+]

@@ -1,0 +1,38 @@
+Windows Registry Editor Version 5.00
+ 
+ 
+ 
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\background\shell\MarkDown]
+ 
+@="在此处打开命令行"
+"Icon"="C:\\Program Files (x86)\\MarkdownPad 2\\MarkdownPad2.exe"
+ 
+ 
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\background\shell\MarkDown\command]
+ 
+@="\"C:\\Program Files (x86)\\MarkdownPad 2\\MarkdownPad2.exe\""
+ 
+ 
+ 
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Folder\shell\cmdPrompt]
+ 
+@="在此处打开命令行"
+ 
+ 
+ 
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Folder\shell\cmdPrompt\command]
+ 
+@="\"C:\\Program Files (x86)\\MarkdownPad 2\\MarkdownPad2.exe\" \""
+ 
+ 
+ 
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\shell\MarkDown]
+ 
+@="在此处打开命令行"
+"Icon"="C:\\Program Files (x86)\\MarkdownPad 2\\MarkdownPad2.exe"
+ 
+ 
+ 
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\shell\MarkDown\command]
+ 
+@="\"C:\\Program Files (x86)\\MarkdownPad 2\\MarkdownPad2.exe\""
