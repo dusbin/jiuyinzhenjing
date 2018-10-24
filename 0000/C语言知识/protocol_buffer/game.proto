@@ -1,0 +1,17 @@
+/**
+ * 角色的个人信息
+ */
+message personal_info {
+	required string name = 1; /* 角色名字 */
+	required int32 year = 2; /* 角色年龄 */
+	required string weapon = 3; /* 武器 */
+	repeated string armor = 4; /* 防具 */
+	optional int32 money = 5; /* 携带的钱 */
+}
+/**
+ * 团队信息
+ */
+message team_info {
+	required personal_info leader = 1; /* leader */
+	optional personal_info aaron = 2; /* 队员 */
+}
