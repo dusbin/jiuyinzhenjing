@@ -1,0 +1,2 @@
+程序主入口为
+	cmd/ipfs/main.go:main
