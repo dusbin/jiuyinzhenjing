@@ -52,28 +52,47 @@ public:
 		return result;
 	}
 };
+//工厂模式，对相同类型的操作进行一次封装
+static Operation* OperationFactory(char operate){
+	Operation *oper = NULL;
+	switch(operate){
+		case '+':
+			oper = new Add();
+			break;
+		case '-':
+			oper = new Sub();
+			break;
+		case '*':
+			oper = new Mul();
+			break;
+		case '/':
+			oper = new Div();
+			break;
+	}
+	return oper;
+}
 void test_01(){
-	Operation *oper = new Add();
+	Operation *oper = OperationFactory('+');
 	oper->setnumberA(1);
 	oper->setnumberB(2);
 	cout<<"+ "<<oper->GetResult()<<endl;
 	delete oper;
-	oper = new Sub();
+	oper = OperationFactory('-');
 	oper->setnumberA(1);
 	oper->setnumberB(2);
 	cout<<"- "<<oper->GetResult()<<endl;
 	delete oper;
-	oper = new Mul();
+	oper = OperationFactory('*');
 	oper->setnumberA(3);
 	oper->setnumberB(2);
 	cout<<"* "<<oper->GetResult()<<endl;
 	delete oper;
-	oper = new Div();
+	oper = OperationFactory('/');
 	oper->setnumberA(1);
 	oper->setnumberB(2);
 	cout<<"/ "<<oper->GetResult()<<endl;
 	delete oper;
-	oper = new Div();
+	oper = OperationFactory('/');
 	oper->setnumberA(1);
 	oper->setnumberB(0);
 	cout<<"/ "<<oper->GetResult()<<endl;
