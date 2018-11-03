@@ -81,6 +81,16 @@ void test_01(){
 	cat2->Say();
 	Dog *dog = new Dog("du");
 	dog->Say();
+	Animal *animal[5];// = new Animal[5];
+	animal[0] = new Cat("xiao hua");
+	animal[1] = new Dog("da huang");
+	animal[2] = new Cat("jiao jiao");
+	animal[3] = new Dog("xiao hei");
+	animal[4] = new Cat("mi mi");
+	for(int i = 0;i<5;i++){//通过子类的不同实现父类的多态
+		animal[i]->Say();
+	}
+	
 }
 int main(){
 	test_01();
