@@ -1,0 +1,6 @@
+package表示了文件所处的包名。
+import 引入其他的包 如fmt等
+注释和c语言相似 //或/**/
+package main必须首先出现，紧跟着是import。在Go中，package总是
+首先出现，然后是import，然后是其他所有内容。当Go程序在执行的时候，首先调用的函数是main.
+main()，这是从C中继承而来。这里定义了这个函数；
