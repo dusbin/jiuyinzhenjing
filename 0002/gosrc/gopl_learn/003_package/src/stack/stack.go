@@ -8,6 +8,9 @@ func (s *Stack)Push(k int){
 	s.i++
 }
 func (s *Stack)Pop()(ret int){
+	if s.i == 0 {
+		return
+	}
 	s.i--
 	ret = s.data[s.i]
 	s.data[s.i] = 0
