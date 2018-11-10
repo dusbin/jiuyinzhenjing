@@ -1,0 +1,56 @@
+package main
+import (
+	"bufio"
+	"os"
+	"strconv"
+	"fmt"
+)
+var reader *bufio.Reader = bufio.NewReader(os.Stdin)
+var st = new(Stack)
+type Stack struct{
+	i int
+	data [10]int
+}
+func (s *Stack)push(k int){
+	if s.i+1 > 9 {return}
+	s.data[s.i] = k
+	s.i++
+}
+func (s *Stack)pop()(ret int){
+	s.i--
+	if s.i < 0 {
+		s.i = 0
+		return
+	}
+	ret = s.data[s.i]
+	return
+}
+func main(){
+	for{
+		s,err:=reader.ReadString('\n')
+		var token string
+		if err != nil {
+			return
+		}
+		for _,c:= range s{
+			switch{
+				case c >= '0' && c <= '9':
+					token = token +string(c)
+				case c == ' ':
+					r,_:=strconv.Atoi(token)
+					st.push(r)
+					token = ""
+				case c == '+':
+					fmt.Println(st.pop()+st.pop())
+				case c == '*':
+					fmt.Println(st.pop()*st.pop())
+				case c == '-':
+					fmt.Println(st.pop()-st.pop())
+				case c == 'q':
+					return
+				default:
+					fmt.Println("err")
+			}
+		}
+	}
+}
