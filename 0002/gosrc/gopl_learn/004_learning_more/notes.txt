@@ -1,0 +1,92 @@
+指针
+go语言有指针，但是没有指针运算，不能用指针变量遍历字符串的各个字节，更像是c语言中的引用，而不是指针。
+为了值传递，引入了指针
+var p *int 定义p是一个指向整数值的指针，
+新定义的变量被赋予为其类型的零值，指针也如此。新定义的或者没有任何指向的指针有值nil 和其他语言中的空（null）指针类似。
+var p *int
+fmt.Printf("%v",p) //打印指针  nil
+var i int
+p = &i
+fmt.Printf("%v",p) //打印出来的内容是类似0x7ff96b81c000a 为i的地址
+*p = 8
+fmt.Printf("%v\n",*p)//8
+fmt.Printf("%v\n",i)//8
+*p++  因为没有指针运算，其实他表示的是(*p)++;首先取到地址指向的值，对值进行加1
+内存分配
+go语言也有垃圾收集，无须担心内存分配和回收
+内存分配有两种方法  new make 应用于不同的类型。不同的工作，
+new分配内存
+内建函数new 本质上和其他语言中的new功能一样，new(T)分配了零值填充的T类型的内存空间并且返回其地址，一个*T类型的值。
+用go语言的术语说，返回了一个指针，指向新分配的类型T的零值
+type SyncedBuffer struct{
+	lock sync.Mutex
+	buffer bytes.Buffer
+}
+p:= new(SyncedBuffer)
+var v SyncedBuffer 
+SyncedBufferde 的值在分配内存或者定义之后立刻就可以使用，
+如上代码中的p和v都可以在没有任何更进一步处理的情况下工作
+用make分配内存
+内建函数make(T,args)与new(T)有着不同的功能，它只能创建slice，map和channel
+并且返回一个有初始值(非零)的T类型，而不是*T，本质来讲导致这三个类型有所不同的原因
+是指向数据结构的引用在使用前必须被初始化，
+如，一个slice 是一个包含指向数据(内部为array)的指针，长度，容量的三项描述符
+在这些项目被初始化前，slice为nil
+对呀slice map和channel make初始化了内部的数据结构，填充了适当的值
+make返回初始化后的（非零）值
+make([]int,10,100)//分配了100个整数的数组。
+	然后用长度10和容量100创建了slice结构指向数组的前10个元素，区别是new([]int)返回指向
+	新分配的内存的指针，而零值填充的slice结构指向nil的slice值
+var p *[]int = new([]int)//分配slice结构内存，*p ==nil
+var v []int = make([]int,100)//v指向一个新分配的有100个整数的数组
+*p = make([]int,100,100)
+v:= make([]int,100)//更常见
+new(T)返回*T指向一个零值T
+make(T)返回初始化后的T
+func NewFile(fd int,name string) *File{
+	if fd <0{
+		return nil
+	}
+	f:=new(File)
+	f.fd = fd
+	f.name = name
+	f.dirinfo = nil
+	f.nepipe = 0
+	return f
+}
+func NewFile(fd int,name string)*File{
+	if fd < 0{
+		return nil
+	}
+	f:=File(fd,name,nil,0)
+	return &f
+}
+定义自己的类型
+type 和c语言的typedef有些类似
+type foo int 创建一个新的类型foo 作用跟int类似。
+可以在创建变量时代码更易阅读，而不是满篇的int
+type NameAge struct{
+	name string //不导出
+	age int //不导出
+}
+a:=new(NameAge)
+a.name = "Pete"
+a.age = 42
+fmt.Printf("%v",a) 输出&{Pete,42}
+fmt.Printf("%s",a.name) 只打印名字
+struct{
+	x,y int
+	A *[]int
+	F func()
+}
+struct{
+	T1 //字段名称是T1
+	*T2 //字段名称是T2
+	p.T3 //字段名称是T3
+	x,y int //字段名称是x和y
+}
+首字母大写可以导出，也就是说可以在其他包中进行读写
+首字母是小写是当前包私有的
+转换
+有时候需要讲一个类型转换为另外一种类型，转换是由操作费(看起来像函数byte())
+完成的，并不是所有的转换是被运行的
