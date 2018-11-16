@@ -24,3 +24,5 @@ func sayhelloName(w http.ResponseWriter,r *http.Request){
 	}
 	fmt.Fprintf(w,"Hello astaxie!")
 }
+//http://192.168.40.75:9090/?url_log=1&url_log=2
+//http://192.168.40.75:9090/
