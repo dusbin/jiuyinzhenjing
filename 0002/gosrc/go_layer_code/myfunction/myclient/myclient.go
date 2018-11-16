@@ -1,11 +1,11 @@
-package main
+package myclient
 import(
 	"net"
 	"fmt"
 	"time"
 )
 const RECV_BUF_LEN = 1024
-func main(){
+func MyClient(){
 	conn,err := net.Dial("tcp","127.0.0.1:6666")//监听端口6666
 	if err!=nil{
 		panic("error listener:"+err.Error())
