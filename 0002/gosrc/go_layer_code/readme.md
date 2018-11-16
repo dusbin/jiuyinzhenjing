@@ -10,3 +10,10 @@ make uninstall  清除和卸载
 #使用
 myserver        启动服务端
 myclient        客户端访问
+#测试
+用例的书写
+    example.go
+    在同级目录下书写examp_test.go 
+    举例：./myserver/myswitch/myswitch_test.go
+    在对应目录下执行 go test . 进行测试
+    或者当前目录下执行go test ./myserver/myswitch/

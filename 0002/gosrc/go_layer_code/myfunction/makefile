@@ -17,6 +17,9 @@ uninstall:
 	rm -rf /bin/myclient /bin/myserver /bin/myfunction myfunction
 clean:
 	rm -rf myfunction
+test:
+	@echo	"\033[32mTest myswitch \033[0m"
+	go test ./myserver/myswitch/
 help:
 	@echo	"make               #编译"
 	@echo	"make clean         #清除"
@@ -24,3 +27,4 @@ help:
 	@echo	"make install       #编译&安装"
 	@echo	"make uninst        #卸载"
 	@echo	"make uninstall     #清除&卸载"
+	@echo	"make test          #测试模块"

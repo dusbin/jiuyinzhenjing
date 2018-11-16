@@ -29,7 +29,7 @@ func working(conn net.Conn){
 		_,err := conn.Read(buf_input)
 		switch err{
 			case nil:
-				buf_output = myswitch.MySwitch(buf_input)
+				_,buf_output = myswitch.MySwitch(buf_input)
 				conn.Write(buf_output[0:])
 			case io.EOF:
 				fmt.Println("Warning:End of Data:",err)
