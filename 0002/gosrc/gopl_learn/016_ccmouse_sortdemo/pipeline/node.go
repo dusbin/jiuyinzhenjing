@@ -1,6 +1,9 @@
 package pipeline
 import(
 	"sort"
+	"io"
+	"encoding/binary"
+	"math/rand"
 )
 //分块读取数据
 func ArraySource(a...int/*a...int 是一个可变参数*/)<-chan int/*chan int 返回一个int的channel,调用者只能拿数据，函数只能写数据*/{
@@ -53,6 +56,44 @@ func Merge(in1,in2 <-chan int)<-chan int{
 			}
 		}
 		close(out)//没有数据进行关闭
+	}()
+	return out
+}
+//读取数据
+func ReaderSource(reader io.Reader) <-chan int{
+	out:=make(chan int)
+	go func(){
+		buffer :=make([]byte,8)//64位的int
+		for{
+			n,err:= reader.Read(buffer)
+			if n > 0 {
+				v:= int(binary.BigEndian.Uint64(buffer))//从buffer中进行大端读，转为uint64位
+				out <- v
+			}
+			if err != nil{
+				break
+			}
+		}
+		close(out)//关闭channel
+	}()
+	return out
+}
+//写文件
+func WriterSink(writer io.Writer,in <-chan int){
+	for v:=range in{
+		buffer := make([]byte,8)
+		binary.BigEndian.PutUint64(buffer,uint64(v))
+		writer.Write(buffer)
+	}
+}
+//随机数据源
+func RandomSource(count int) <-chan int{
+	out:=make(chan int)
+	go func(){
+		for i:=0;i<count;i++{
+			out  <- rand.Int()
+		}
+		close(out)
 	}()
 	return out
 }

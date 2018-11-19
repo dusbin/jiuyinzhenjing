@@ -1,10 +1,29 @@
 package main
 
 import (
+	"os"
 	"fmt"
 	"./pipeline"
 )
 func main(){
+	file,err:=os.Create("small.in")
+	if err != nil{
+		panic(err)//抛出异常
+	}
+	defer file.Close() //退出时进行执行，即使中间退出也会执行
+	p:=pipeline.RandomSource(50)//生成50个随机数
+	pipeline.WriterSink(file,p)//写数据
+	file,err = os.Open("small.in")
+	if err != nil{
+		panic(err)
+	}
+	defer file.Close()//退出时先执行，再执行上一个defer,遵循先进后出原则
+	p = pipeline.ReaderSource(file)//读数据
+	for v:= range p{
+		fmt.Println(v)
+	}
+}
+func merageDemo(){
 	//slice 比数组更灵活  slice of int 
 	//a:=[]int{3,6,2,1,9,10,8}
 	//sort.Ints(a)
