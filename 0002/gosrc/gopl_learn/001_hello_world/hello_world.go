@@ -1,11 +1,21 @@
 package main
 import (
+	"time"
 	"net/http"
 	"fmt"
 )
 func main(){
-	test_01()
-	test_02()
+	//test_01()
+	//test_02()
+	test_03()
+}
+//并发版helloworld
+func test_03(){
+	go printWorldHello() //开一个goroutine运行
+	time.Sleep(time.Second)//没有这一行可能看不到helloworld，goroutine还没有创建完 main就已经退出了
+}
+func printWorldHello(){
+	fmt.Println("Hello World")
 }
 //网络版helloworld
 func test_02(){
