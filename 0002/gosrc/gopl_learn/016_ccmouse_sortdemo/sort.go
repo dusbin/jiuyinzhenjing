@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"os"
 	"fmt"
 	"./pipeline"
@@ -14,13 +15,13 @@ func main(){
 	}
 	defer file.Close() //退出时进行执行，即使中间退出也会执行
 	p:=pipeline.RandomSource(n)//生成50个随机数
-	pipeline.WriterSink(file,p)//写数据
+	pipeline.WriterSink(bufio.NewWriter(file),p)//写数据 使用bufio 提高效率
 	file,err = os.Open(filename)
 	if err != nil{
 		panic(err)
 	}
 	defer file.Close()//退出时先执行，再执行上一个defer,遵循先进后出原则
-	p = pipeline.ReaderSource(file)//读数据
+	p = pipeline.ReaderSource(bufio.NewReader(file))//读数据
 	count :=0 
 	for v:= range p{
 		fmt.Println(v)
