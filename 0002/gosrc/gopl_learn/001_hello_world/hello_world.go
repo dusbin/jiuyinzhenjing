@@ -11,14 +11,20 @@ func main(){
 }
 //并发版helloworld
 func test_03(){
+	ch :=make(chan string)//创建一个channel,用来接收goroutine传来的数据
 	for i:= 0;i<5000;i++{//开五个goroutine进行打印helloworld
-		go printWorldHello(i) //开一个goroutine运行 很多个goroutine可以映射到 不是五个线程，编译器级别的多任务，很多个goroutine可以映射到一个物理线程
+		go printWorldHello(i,ch) //开一个goroutine运行 很多个goroutine可以映射到 不是五个线程，编译器级别的多任务，很多个goroutine可以映射到一个物理线程
+	}
+	for{
+		msg:= <- ch //从字符串channel中读取消息
+		fmt.Println(msg)
 	}
 	time.Sleep(time.Second)//没有这一行可能看不到helloworld，goroutine还没有创建完 main就已经退出了
 }
-func printWorldHello(i int){
+func printWorldHello(i int ,ch chan string){
 	for{
-		fmt.Printf("Hello World %d\n",i)
+		ch <-
+		fmt.Sprintf("Hello World %d\n",i)//将要输出的信息放到string的channel中
 	}
 }
 //网络版helloworld
