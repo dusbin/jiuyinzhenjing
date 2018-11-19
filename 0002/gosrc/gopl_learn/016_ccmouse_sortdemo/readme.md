@@ -48,4 +48,10 @@ go语言：goroutine通过channel调用goroutine
 通过goroutine实现节点。
 ## 外部排序Pipeline
 原始数据->分块读取数据->内部排序（要求上游结束才能开始，需要等待，同步原语sort.Ints()）->两路归并，多级归并->排序结果
+# 第三步
+## 实现了更多的节点
+实现ReaderSource节点
 
+实现WriterSinl节点
+
+测试数据的生成

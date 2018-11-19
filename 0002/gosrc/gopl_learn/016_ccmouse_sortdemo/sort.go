@@ -15,7 +15,9 @@ func main(){
 	}
 	defer file.Close() //退出时进行执行，即使中间退出也会执行
 	p:=pipeline.RandomSource(n)//生成50个随机数
-	pipeline.WriterSink(bufio.NewWriter(file),p)//写数据 使用bufio 提高效率
+	writer := bufio.NewWriter(file)//创建buf提高效率
+	pipeline.WriterSink(writer,p)//写数据
+	writer.Flush() //没有这一行的话可能生成的大小不是想要的，没有把数据全部写入到文件中
 	file,err = os.Open(filename)
 	if err != nil{
 		panic(err)
