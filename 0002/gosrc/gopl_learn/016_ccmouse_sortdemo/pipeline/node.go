@@ -23,6 +23,7 @@ func InMemSort(in <- chan int)<-chan int{//in 相对于当前这个函数是一�
 			a = append(a,v)
 		}
 		sort.Ints(a)//排序
+		//排序完成后才开始发送数据
 		for _,v:=range a{
 			out <- v //将元素一个一个的通channel传出去
 		}
@@ -33,16 +34,22 @@ func InMemSort(in <- chan int)<-chan int{//in 相对于当前这个函数是一�
 //归并
 func Merge(in1,in2 <-chan int)<-chan int{
 	out:=make(chan int)
-	go func(){
+	go func(){//同时从两个channel中获取数据，两个channel的数据量不一定一样
 		v1,ok1:=<-in1
 		v2,ok2:=<-in2
 		for ok1 || ok2{//还有数据
-			if !ok2 ||(ok1&&v1 <= v2){
+			/*
+			 * 发送v1的条件（即if分支） 
+			 *	 channel 2没数据，channel 1有数据
+			 *   channel 2有数据channel 1有数据，且channel1的数据小于channel2的数据
+			 * 发送v2的数据（即else分支）
+			 */
+			if !ok2 ||(ok1&& v1 <= v2){
 				out <- v1
-				v1,ok1 = <-in1
+				v1,ok1 = <-in1 //送完后更新v1的数据
 			}else{
-				out<-v2
-				v2,ok2 = <-in2
+				out <- v2
+				v2,ok2 = <-in2 //送完后更新v2的数据
 			}
 		}
 		close(out)//没有数据进行关闭
