@@ -1,6 +1,22 @@
 package main
-import "fmt"
+import (
+	"net/http"
+	"fmt"
+)
 func main(){
+	test_01()
+	test_02()
+}
+//网络版helloworld
+func test_02(){
+	http.HandleFunc("/",func(//第二个参数用一个函数来实现
+		writer http.ResponseWriter,//写入的位置
+		request *http.Request){
+		fmt.Fprintln(writer,"<h1>Hello world!</h1>")//写入的字符串
+	})
+	http.ListenAndServe(":8888",nil)//创建端口
+}
+func test_01(){
 	fmt.Printf("Hello, world;orこんにちは;or世界，你好\n")
 	a := 15
 	b := false
