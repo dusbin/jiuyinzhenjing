@@ -11,11 +11,13 @@ func main(){
 }
 //并发版helloworld
 func test_03(){
-	go printWorldHello() //开一个goroutine运行
+	for i:= 0;i<5;i++{//开五个goroutine进行打印helloworld
+		go printWorldHello(i) //开一个goroutine运行
+	}
 	time.Sleep(time.Second)//没有这一行可能看不到helloworld，goroutine还没有创建完 main就已经退出了
 }
-func printWorldHello(){
-	fmt.Println("Hello World")
+func printWorldHello(i int){
+	fmt.Printf("Hello World %d\n",i)
 }
 //网络版helloworld
 func test_02(){
