@@ -11,8 +11,8 @@ func main(){
 func test_02(){
 	http.HandleFunc("/",func(//第二个参数用一个函数来实现
 		writer http.ResponseWriter,//写入的位置
-		request *http.Request){
-		fmt.Fprintln(writer,"<h1>Hello world!</h1>")//写入的字符串
+		request *http.Request){//是从web页面传进来的参数
+		fmt.Fprintf(writer,"<h1>Hello world! %s</h1>",request.FormValue("name"))//写入的字符串 http://192.168.40.75:8888/?name=dus 将name传进来
 	})
 	http.ListenAndServe(":8888",nil)//创建端口
 }
