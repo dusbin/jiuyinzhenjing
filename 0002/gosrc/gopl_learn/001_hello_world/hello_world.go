@@ -11,13 +11,15 @@ func main(){
 }
 //并发版helloworld
 func test_03(){
-	for i:= 0;i<5;i++{//开五个goroutine进行打印helloworld
-		go printWorldHello(i) //开一个goroutine运行
+	for i:= 0;i<5000;i++{//开五个goroutine进行打印helloworld
+		go printWorldHello(i) //开一个goroutine运行 很多个goroutine可以映射到 不是五个线程，编译器级别的多任务，很多个goroutine可以映射到一个物理线程
 	}
 	time.Sleep(time.Second)//没有这一行可能看不到helloworld，goroutine还没有创建完 main就已经退出了
 }
 func printWorldHello(i int){
-	fmt.Printf("Hello World %d\n",i)
+	for{
+		fmt.Printf("Hello World %d\n",i)
+	}
 }
 //网络版helloworld
 func test_02(){
