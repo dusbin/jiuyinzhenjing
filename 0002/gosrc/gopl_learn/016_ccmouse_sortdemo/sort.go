@@ -7,10 +7,16 @@ import (
 	"./pipeline"
 )
 func main(){
-	p := createPipeline("small.in",512,4)
-	writeToFile(p,"small.out")
-	printFile("small.out")
 	//merageDemo_2()
+	merageDemo_3()
+}
+//进行生成的文件排序
+func merageDemo_3(){
+	const filename = "large.in"
+	const n = 800000000
+	p := createPipeline(filename,n,4)
+	writeToFile(p,"large.out")
+	printFile("large.out")
 }
 func printFile(filename string){
 	file,err:= os.Open(filename)
@@ -19,8 +25,13 @@ func printFile(filename string){
 	}
 	defer file.Close()
 	p:=pipeline.ReaderSource(file,-1)
+	count:=0
 	for v:= range p{
 		fmt.Println(v)
+		count++
+		if count >= 200{
+			break
+		}
 	}
 
 }
@@ -39,6 +50,7 @@ func writeToFile(p <- chan int,filename string){
 func createPipeline(filename string,fileSize,chunkCount int)<-chan int{//没有实现工业化的Fileclose
 	chunckSize := fileSize / chunkCount //每一块的大小 产品中需要处理非整除的情况
 	sortResults:=[]<-chan int{} //用来接收pipeline.InMemSort的结果
+	pipeline.Init()//开始计时
 	for i:=0;i<chunkCount;i++{
 		file,err:=os.Open(filename)
 		if err!=nil{
@@ -51,9 +63,12 @@ func createPipeline(filename string,fileSize,chunkCount int)<-chan int{//没有�
 	return pipeline.MergeN(sortResults...)//将归并后的数结果返回回去
 
 }
+//生成文件
 func merageDemo_2(){
-	const filename = "small.in"
-	const n = 64
+	//const filename = "small.in"
+	//const n = 64
+	const filename = "large.in"
+	const n = 100000000
 	file,err:=os.Create(filename)
 	if err != nil{
 		panic(err)//抛出异常
@@ -73,7 +88,7 @@ func merageDemo_2(){
 	for v:= range p{
 		fmt.Println(v)
 		count++
-		if count > 100{
+		if count > 200{
 			break
 		}
 	}

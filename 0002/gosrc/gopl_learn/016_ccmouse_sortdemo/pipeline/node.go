@@ -4,7 +4,14 @@ import(
 	"io"
 	"encoding/binary"
 	"math/rand"
+	"time"
+	"fmt"
 )
+var startTime time.Time
+//用于获取开始时间
+func Init(){
+	startTime = time.Now()
+}
 //分块读取数据
 func ArraySource(a...int/*a...int 是一个可变参数*/)<-chan int/*chan int 返回一个int的channel,调用者只能拿数据，函数只能写数据*/{
 	out:=make(chan int)
@@ -25,12 +32,15 @@ func InMemSort(in <- chan int)<-chan int{//in 相对于当前这个函数是一�
 		for v:= range in{//从channel中取数据放到int类型的slice a中
 			a = append(a,v)
 		}
+		fmt.Println("Read done:",time.Now().Sub(startTime))
 		sort.Ints(a)//排序
+		fmt.Println("InMemSort done:",time.Now().Sub(startTime))
 		//排序完成后才开始发送数据
 		for _,v:=range a{
 			out <- v //将元素一个一个的通channel传出去
 		}
 		close(out)//传完之后关闭channel
+		fmt.Println("Merge done:",time.Now().Sub(startTime))
 	}()
 	return out
 }
