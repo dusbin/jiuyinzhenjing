@@ -59,18 +59,20 @@ func Merge(in1,in2 <-chan int)<-chan int{
 	}()
 	return out
 }
-//读取数据
-func ReaderSource(reader io.Reader) <-chan int{
+//读取数据 增加最多读取chunkSize大小的数据 -1 全部度
+func ReaderSource(reader io.Reader,chunkSize int) <-chan int{
 	out:=make(chan int)
 	go func(){
 		buffer :=make([]byte,8)//64位的int
+		bytesRead := 0
 		for{
 			n,err:= reader.Read(buffer)
+			bytesRead += n //每读一次 自增
 			if n > 0 {
 				v:= int(binary.BigEndian.Uint64(buffer))//从buffer中进行大端读，转为uint64位
 				out <- v
 			}
-			if err != nil{
+			if err != nil || (chunkSize != -1 && bytesRead > chunkSize){//出错或者chunkSize不等于-1并且bytesRead大于chunkSize
 				break
 			}
 		}
@@ -96,4 +98,15 @@ func RandomSource(count int) <-chan int{
 		close(out)
 	}()
 	return out
+}
+//N路归并
+func MergeN(inputs...<-chan int) <-chan int{//输入为chan int类型的可变参数，输出为chan的int
+	if len(inputs) == 1{//递归结束，当inputs为一路时
+		return inputs[0]
+	}
+	m:=len(inputs)/2 //将N路一分为二
+	//merge inputs[0..m) and inputs[m..end)
+	return Merge(
+		MergeN(inputs[:m]...)/*前半部*/,
+		MergeN(inputs[m:]...)/*后半部分*/)
 }

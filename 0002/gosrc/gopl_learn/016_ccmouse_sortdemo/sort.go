@@ -7,8 +7,53 @@ import (
 	"./pipeline"
 )
 func main(){
-	const filename = "large.in"
-	const n = 100000000
+	p := createPipeline("small.in",512,4)
+	writeToFile(p,"small.out")
+	printFile("small.out")
+	//merageDemo_2()
+}
+func printFile(filename string){
+	file,err:= os.Open(filename)
+	if err != nil{
+		panic(err)
+	}
+	defer file.Close()
+	p:=pipeline.ReaderSource(file,-1)
+	for v:= range p{
+		fmt.Println(v)
+	}
+
+}
+//写入文件
+func writeToFile(p <- chan int,filename string){
+	file,err:=os.Create(filename)
+	if err != nil{
+		panic(err)
+	}
+	defer file.Close()
+	writer:=bufio.NewWriter(file)
+	defer writer.Flush()//先于上两行的defer执行，先进后出
+	pipeline.WriterSink(writer,p) //将p写入到文件中去
+}
+//创建pipeline 文件名 文件大小，chunk个数
+func createPipeline(filename string,fileSize,chunkCount int)<-chan int{//没有实现工业化的Fileclose
+	chunckSize := fileSize / chunkCount //每一块的大小 产品中需要处理非整除的情况
+	sortResults:=[]<-chan int{} //用来接收pipeline.InMemSort的结果
+	for i:=0;i<chunkCount;i++{
+		file,err:=os.Open(filename)
+		if err!=nil{
+			panic(err)
+		}
+		file.Seek(int64(i*chunckSize),0)
+		source:=pipeline.ReaderSource(bufio.NewReader(file),chunckSize) //读到数据送到source
+		sortResults = append(sortResults, pipeline.InMemSort(source))//将结果加入到sortResults中
+	}
+	return pipeline.MergeN(sortResults...)//将归并后的数结果返回回去
+
+}
+func merageDemo_2(){
+	const filename = "small.in"
+	const n = 64
 	file,err:=os.Create(filename)
 	if err != nil{
 		panic(err)//抛出异常
@@ -23,7 +68,7 @@ func main(){
 		panic(err)
 	}
 	defer file.Close()//退出时先执行，再执行上一个defer,遵循先进后出原则
-	p = pipeline.ReaderSource(bufio.NewReader(file))//读数据
+	p = pipeline.ReaderSource(bufio.NewReader(file),-1)//读数据
 	count :=0 
 	for v:= range p{
 		fmt.Println(v)
@@ -33,7 +78,7 @@ func main(){
 		}
 	}
 }
-func merageDemo(){
+func merageDemo_1(){
 	//slice 比数组更灵活  slice of int 
 	//a:=[]int{3,6,2,1,9,10,8}
 	//sort.Ints(a)
