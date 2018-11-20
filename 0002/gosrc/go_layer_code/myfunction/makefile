@@ -1,7 +1,9 @@
 BIN=myfunction
-.PHONY:BIN install uninstall inst uninst clean help
+.PHONY:BIN install uninstall inst uninst clean help debug
 BIN:
 	go build .
+debug:
+	go build -gcflags "-N -l" -o main main.go
 inst:
 	cp -f myfunction /bin/
 	ln -s /bin/myfunction /bin/myclient
@@ -23,6 +25,7 @@ test:
 help:
 	@echo	"make               #编译"
 	@echo	"make clean         #清除"
+	@echo   "make debug         #编译调试版"
 	@echo	"make inst          #安装"
 	@echo	"make install       #编译&安装"
 	@echo	"make uninst        #卸载"
