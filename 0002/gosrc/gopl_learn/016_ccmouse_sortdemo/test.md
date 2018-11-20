@@ -54,3 +54,27 @@ Merge done: 3m49.781954563s
 Merge done: 3m49.78559273s
 
 Merge done: 3m49.783330799s
+## 优化后实体机运行（ThinkPad E470 windows10 I7 16G）
+Read done: 7.3135637s
+
+Read done: 7.4811153s
+
+Read done: 7.6596375s
+
+Read done: 7.7543841s
+
+InMemSort done: 23.2997827s
+
+InMemSort done: 23.3845559s
+
+InMemSort done: 23.6209234s
+
+InMemSort done: 23.7585566s
+
+Merge done: 1m5.9416505s
+
+Merge done: 1m5.9416505s
+
+Merge done: 1m5.9416505s
+
+Merge done: 1m5.9416505s
