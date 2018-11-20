@@ -26,7 +26,7 @@ func ArraySource(a...int/*a...int 是一个可变参数*/)<-chan int/*chan int �
 }
 //排序
 func InMemSort(in <- chan int)<-chan int{//in 相对于当前这个函数是一个只接收输入的channel，返回值是一个只输出的channel
-	out:=make(chan int)
+	out:=make(chan int,1024)
 	go func(){
 		a:= []int{}
 		for v:= range in{//从channel中取数据放到int类型的slice a中
@@ -46,7 +46,7 @@ func InMemSort(in <- chan int)<-chan int{//in 相对于当前这个函数是一�
 }
 //归并
 func Merge(in1,in2 <-chan int)<-chan int{
-	out:=make(chan int)
+	out:=make(chan int,1024)
 	go func(){//同时从两个channel中获取数据，两个channel的数据量不一定一样
 		v1,ok1:=<-in1
 		v2,ok2:=<-in2
@@ -71,7 +71,7 @@ func Merge(in1,in2 <-chan int)<-chan int{
 }
 //读取数据 增加最多读取chunkSize大小的数据 -1 全部度
 func ReaderSource(reader io.Reader,chunkSize int) <-chan int{
-	out:=make(chan int)
+	out:=make(chan int,1024)
 	go func(){
 		buffer :=make([]byte,8)//64位的int
 		bytesRead := 0

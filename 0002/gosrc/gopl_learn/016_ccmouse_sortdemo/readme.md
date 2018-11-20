@@ -55,3 +55,10 @@ go语言：goroutine通过channel调用goroutine
 实现WriterSinl节点
 
 测试数据的生成
+# 第四部
+## 单机版外部排序pipeline
+ReaderSource节点-支持分块
+
+MergeN-搭建归并节点组
+
+pipeline的搭建及运行-CPU及现场数量的观测
