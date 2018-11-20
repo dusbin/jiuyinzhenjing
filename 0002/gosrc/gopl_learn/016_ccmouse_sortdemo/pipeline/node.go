@@ -72,7 +72,7 @@ func ReaderSource(reader io.Reader,chunkSize int) <-chan int{
 				v:= int(binary.BigEndian.Uint64(buffer))//从buffer中进行大端读，转为uint64位
 				out <- v
 			}
-			if err != nil || (chunkSize != -1 && bytesRead > chunkSize){//出错或者chunkSize不等于-1并且bytesRead大于chunkSize
+			if err != nil || (chunkSize != -1 && bytesRead >= chunkSize){//出错或者chunkSize不等于-1并且bytesRead大于chunkSize
 				break
 			}
 		}
