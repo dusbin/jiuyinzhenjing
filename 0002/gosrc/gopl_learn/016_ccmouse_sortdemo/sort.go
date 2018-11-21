@@ -1,14 +1,49 @@
 package main
 
 import (
+	"strconv"
 	"bufio"
 	"os"
 	"fmt"
 	"./pipeline"
 )
 func main(){
-	//merageDemo_2()
-	merageDemo_3()
+	//merageDemo_2()//生成乱序int大数据
+	//merageDemo_3()//单机版排序
+	merageDemo_4()//网络版排序
+}
+func merageDemo_4(){
+	const filename = "large.in"
+	const n = 800000000
+	p:=createNetPipeline(filename,n,4)
+	writeToFile(p,"large.out")
+	printFile("large.out")
+	//time.Sleep(time.Hour)
+}
+//创建pipeline 文件名 文件大小，chunk个数
+func createNetPipeline(filename string,fileSize,chunkCount int)<-chan int{//没有实现工业化的Fileclose
+	chunckSize := fileSize / chunkCount //每一块的大小 产品中需要处理非整除的情况
+	sortResults:=[]<-chan int{} //用来接收pipeline.InMemSort的结果
+	pipeline.Init()//开始计时
+	sortAddr :=[] string{}
+	for i:=0;i<chunkCount;i++{
+		file,err:=os.Open(filename)
+		if err!=nil{
+			panic(err)
+		}
+		file.Seek(int64(i*chunckSize),0)
+		source:=pipeline.ReaderSource(bufio.NewReader(file),chunckSize) //读到数据送到source
+		addr := ":"+strconv.Itoa(7000+i) 
+		pipeline.NetWorkSink(addr,pipeline.InMemSort(source))//将结果送给网络
+		sortAddr = append(sortAddr,addr)
+	}
+	//return nil
+	//sortResults := [] <-chan int{}
+	for _,addr:=range sortAddr{
+		sortResults = append(sortResults,pipeline.NetWorkSource(addr))//从网络中取
+	}
+	return pipeline.MergeN(sortResults...)//将归并后的数结果返回回去
+
 }
 //进行生成的文件排序
 func merageDemo_3(){
