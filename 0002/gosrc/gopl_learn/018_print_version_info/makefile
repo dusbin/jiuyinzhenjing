@@ -1,12 +1,12 @@
 BIN=main
 BUILD_TIME		:=$(shell date "+%F %T")
-COMMIT_SHA1		:=$(shell git rev-parse HEAD||echo "GitNotFound")
+COMMIT_SHA1		:=$(shell git rev-parse HEAD || echo "GitNotFound")
 .PHONY:BIN clean help
 BIN:
 	go build \
  -ldflags " \
- -X 'version.BuildTime=${BUILD_TIME}' \
- -X 'version.CommitID=${COMMIT_SHA1}' \
+ -X 'main.BuildTime=${BUILD_TIME}' \
+ -X 'main.CommitID=${COMMIT_SHA1}' \
  " -o $(BIN)
 clean:
 	rm -rf main
