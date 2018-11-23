@@ -27,13 +27,17 @@ func printWorldHello(i int ,ch chan string){
 		fmt.Sprintf("Hello World %d\n",i)//将要输出的信息放到string的channel中
 	}
 }
+func dus(w http.ResponseWriter,r *http.Request){
+	fmt.Fprintf(w,"<h1>Hello Dus %s %s</h1>",r.URL.Path[:],r.FormValue("name"))
+}
 //网络版helloworld
 func test_02(){
-	http.HandleFunc("/",func(//第二个参数用一个函数来实现
+	http.HandleFunc("/hello",func(//第二个参数用一个函数来实现
 		writer http.ResponseWriter,//写入的位置
 		request *http.Request){//是从web页面传进来的参数
 		fmt.Fprintf(writer,"<h1>Hello world! %s %s</h1>",request.FormValue("name"),request.FormValue("tel"))//写入的字符串 http://192.168.40.75:8888/?name=dus 将name传进来
 	})
+	http.HandleFunc("/dus",dus)
 	http.ListenAndServe(":8888",nil)//创建端口
 }
 func test_01(){
