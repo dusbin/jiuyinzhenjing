@@ -46,7 +46,7 @@ func Server(){
 func index(w http.ResponseWriter,r *http.Request){
 	fmt.Fprintf(w,"<html><body>")
 	html.Title(w,"main")
-	fmt.Fprintf(w,"<h1>info</h1>")
+	fmt.Fprintf(w,"<h1>Features List</h1>")
 	for _,v:=range plugin_list{
 		fmt.Fprintf(w,"<h2><a href=\"%s\">%s</a></h2>",v,v)
 	}

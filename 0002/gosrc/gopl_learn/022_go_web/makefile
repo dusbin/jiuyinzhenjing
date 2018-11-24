@@ -10,7 +10,7 @@ help:
 run:
 	go run main.go
 bin:
-	go build main main.go
+	go build main.go
 osinfo:
 	go build -tags osinfo -buildmode=plugin -o osinfo.so osinfo/osinfo.go
 userinfo:
