@@ -1,5 +1,6 @@
 package server
 import (
+	"net"
 	"strings"
 	"net/http"
 	"fmt"
@@ -15,12 +16,13 @@ func Server(){
 	if error!= nil{
 		panic(error)
 	}
+	port:=":8000"
 	//plugin_list:=[]string{}
 	for _,v:=range dir_list{
 		if strings.HasSuffix(v.Name(),".so") == true{
-			fmt.Println(v.Name())
+			//fmt.Println(v.Name())
 			plugin_file:="./"+v.Name()
-			fmt.Println(plugin_file)
+			//fmt.Println(plugin_file)
 			pdll,err:= plugin.Open(plugin_file)
 			if err != nil{
 				panic(err)
@@ -30,7 +32,7 @@ func Server(){
 				panic(err)
 			}
 			plugin_name:=get_plugin_name_func.(func()(string))()
-			fmt.Println("plugin name:",plugin_name)
+			//fmt.Println("plugin name:",plugin_name)
 			plugin_func,err:=pdll.Lookup("Func_plugin")
 			if err != nil{
 				panic(err)
@@ -41,7 +43,19 @@ func Server(){
 		}
 	}
 	http.HandleFunc("/",index)
-	http.ListenAndServe(":8000",nil)
+	addrs,err:=net.InterfaceAddrs()
+	if err != nil {
+		panic(err)
+	}
+	for _,address :=range addrs{
+		ipnet:=address.(*net.IPNet)
+		//if ipnet,ok:=address.(*net.IPNet);ok && !ipnet.IP.IsLoopback(){//回环地址
+			if ipnet.IP.To4()!= nil {
+				fmt.Println("access http://",ipnet.IP.String(),port)
+			}
+		//}
+	}
+	http.ListenAndServe(port,nil)
 }
 func index(w http.ResponseWriter,r *http.Request){
 	fmt.Fprintf(w,"<html><body>")
