@@ -36,6 +36,10 @@ func main(){
 		w.Wait()
 		w.TriggerEvent(watcher.Create,nil)
 		w.TriggerEvent(watcher.Remove,nil)
+		w.TriggerEvent(watcher.Rename,nil)
+		w.TriggerEvent(watcher.Move,nil)
+		w.TriggerEvent(watcher.Chmod,nil)
+		w.TriggerEvent(watcher.Write,nil)
 	}()
 	if err:=w.Start(time.Millisecond *100);err!=nil{
 		log.Fatalln(err)
