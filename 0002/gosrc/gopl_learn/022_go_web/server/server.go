@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"fmt"
 	"../html"
-	//"time"
+	"time"
 	"plugin"
 	"io/ioutil"
 )
@@ -16,13 +16,11 @@ func Server(){
 	if error!= nil{
 		panic(error)
 	}
-	port:=":8000"
-	//plugin_list:=[]string{}
+	port:=":80"
+	sport:=":8080"
 	for _,v:=range dir_list{
 		if strings.HasSuffix(v.Name(),".so") == true{
-			//fmt.Println(v.Name())
 			plugin_file:="./"+v.Name()
-			//fmt.Println(plugin_file)
 			pdll,err:= plugin.Open(plugin_file)
 			if err != nil{
 				panic(err)
@@ -32,7 +30,6 @@ func Server(){
 				panic(err)
 			}
 			plugin_name:=get_plugin_name_func.(func()(string))()
-			//fmt.Println("plugin name:",plugin_name)
 			plugin_func,err:=pdll.Lookup("Func_plugin")
 			if err != nil{
 				panic(err)
@@ -55,7 +52,15 @@ func Server(){
 			}
 		//}
 	}
-	http.ListenAndServe(port,nil)
+	go func(){
+		http.ListenAndServe(port,nil)//由于会阻塞，放在goroutine中，不影响下一个服务的启动，可以多开几个端口作为服务入口
+	}()
+	go func(){
+		http.ListenAndServeTLS(sport,"cert.pem","key.pem",nil)////由于会阻塞，放在goroutine中，不影响下一个服务的启动，可以多开几个端口作为服务入口
+	}()
+	for {//没有常驻进程，主程序退出，goroutine也不能再存活，写一个for循环禁止main退出，也可以把最后一个服务放到main中而不是goroutine中，一般不建议那么做。
+		time.Sleep(time.Minute)
+	}
 }
 func index(w http.ResponseWriter,r *http.Request){
 	fmt.Fprintf(w,"<html><body>")
