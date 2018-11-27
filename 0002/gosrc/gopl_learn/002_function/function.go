@@ -2,12 +2,28 @@ package main
 import(
 	"fmt"
 )
+type double float64
+func (a double) IsEqual(b double) bool {
+	var r = a - b
+	if r == 0.0 {
+		return true
+	}else if r < 0.0 {
+		return r > -0.0001
+	}
+	return r < 0.0001
+}
 func main(){
 	test_digui(9)
 	test_more_return()
 	test_jiecheng()
 	test_defer()
 	test_func()
+	test_IsEqual()
+}
+func test_IsEqual(){
+	var a double = 1.9999
+	var b double = 1.99998
+	fmt.Println(a.IsEqual(b))
 }
 func test_func(){
 	a:= func(){
