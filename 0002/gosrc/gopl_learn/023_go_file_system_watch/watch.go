@@ -3,7 +3,8 @@ import (
 	"fmt"
 	"log"
 	"time"
-	"github.com/radovskyb/watcher"
+	//"github.com/radovskyb/watcher"
+	"./watcher"
 )
 func main(){
 	w:=watcher.New()
