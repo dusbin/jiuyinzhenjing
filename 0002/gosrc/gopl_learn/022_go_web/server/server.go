@@ -1,5 +1,9 @@
 package server
 import (
+	"os"
+	"html/template"
+	"encoding/hex"
+	"crypto/md5"
 	"net"
 	"strings"
 	"net/http"
@@ -8,6 +12,8 @@ import (
 	"time"
 	"plugin"
 	"io/ioutil"
+	"io"
+	"strconv"
 )
 var count = 0
 var plugin_list = []string{}
@@ -40,6 +46,8 @@ func Server(){
 		}
 	}
 	http.HandleFunc("/",index)
+	http.HandleFunc("/upload",upload)
+	http.HandleFunc("/uploadfile",uploadfile)
 	addrs,err:=net.InterfaceAddrs()
 	if err != nil {
 		panic(err)
@@ -60,6 +68,49 @@ func Server(){
 	}()
 	for {//没有常驻进程，主程序退出，goroutine也不能再存活，写一个for循环禁止main退出，也可以把最后一个服务放到main中而不是goroutine中，一般不建议那么做。
 		time.Sleep(time.Minute)
+	}
+}
+func upload(w http.ResponseWriter,r *http.Request){
+	fmt.Fprintf(w,"<html><body>")
+	html.Title(w,"upload")
+	fmt.Fprintf(w,"<form enctype=\"multipart/form-data\" action=\"/uploadfile\" method=\"post\"> <input type=\"file\" name=\"uploadfile\" /> <input type=\"hidden\" name=\"token\" value=\"{{.}}\"/> <input type=\"submit\" value=\"upload\" /> </form>")
+	fmt.Fprintf(w,"</body></html>")
+}
+func uploadfile(w http.ResponseWriter,r *http.Request){
+	r.ParseForm()
+	if r.Method == "GET"{ 
+		time := time.Now().Unix() 
+		h := md5.New() 
+		h.Write([]byte(strconv.FormatInt(time,10))) 
+		token := hex.EncodeToString(h.Sum(nil)) 
+		t, _ := template.ParseFiles("./view/upload.ctpl") 
+		t.Execute(w, token) 
+	}else if r.Method == "POST"{ 
+		//把上传的文件存储在内存和临时文件中 
+		r.ParseMultipartForm(32 << 20) 
+		//获取文件句柄，然后对文件进行存储等处理 
+		file, handler, err := r.FormFile("uploadfile")
+		fmt.Fprintf(w,"<html><body>")
+		html.Title(w,"upload resault")
+		if err != nil{ 
+			fmt.Fprintf(w,"<h2>update[%s] faile</h2>",handler.Filename)
+			fmt.Fprintf(w,"</body></html>")
+			return 
+		} 
+		defer file.Close() 
+		//fmt.Fprintf(w, "%v", handler.Header) 
+		//创建上传的目的文件 
+		f, err := os.OpenFile("./" + handler.Filename, os.O_WRONLY | os.O_CREATE, 0666) 
+		if err != nil{ 
+			fmt.Fprintf(w,"<h2>update[%s] faile</h2>",handler.Filename)
+			fmt.Fprintf(w,"</body></html>")
+			return 
+		} 
+		defer f.Close() 
+		//拷贝文件 
+		io.Copy(f, file) 
+		fmt.Fprintf(w,"<h2>update[%s] ok</h2>",handler.Filename)
+		fmt.Fprintf(w,"</body></html>")
 	}
 }
 func index(w http.ResponseWriter,r *http.Request){
