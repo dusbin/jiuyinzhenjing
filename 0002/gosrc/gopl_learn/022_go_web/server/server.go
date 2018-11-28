@@ -16,6 +16,7 @@ import (
 	"strconv"
 )
 var count = 0
+var Running = 0
 var plugin_list = []string{}
 func Server(){
 	dir_list,error:=ioutil.ReadDir("./")
@@ -24,6 +25,7 @@ func Server(){
 	}
 	port:=":80"
 	sport:=":8080"
+	plugin_list = []string{}
 	for _,v:=range dir_list{
 		if strings.HasSuffix(v.Name(),".so") == true{
 			plugin_file:="./"+v.Name()
@@ -48,6 +50,7 @@ func Server(){
 	http.HandleFunc("/",index)
 	http.HandleFunc("/upload",upload)
 	http.HandleFunc("/uploadfile",uploadfile)
+	http.HandleFunc("/restart",restart)
 	addrs,err:=net.InterfaceAddrs()
 	if err != nil {
 		panic(err)
@@ -66,14 +69,30 @@ func Server(){
 	go func(){
 		http.ListenAndServeTLS(sport,"cert.pem","key.pem",nil)////由于会阻塞，放在goroutine中，不影响下一个服务的启动，可以多开几个端口作为服务入口
 	}()
+	Running = 1
 	for {//没有常驻进程，主程序退出，goroutine也不能再存活，写一个for循环禁止main退出，也可以把最后一个服务放到main中而不是goroutine中，一般不建议那么做。
-		time.Sleep(time.Minute)
+		if Running == 1 {
+			//time.Sleep(time.Minute)
+			time.Sleep(time.Second)
+		}else {
+			fmt.Println("restart")
+			
+			break
+		}
 	}
 }
 func upload(w http.ResponseWriter,r *http.Request){
 	fmt.Fprintf(w,"<html><body>")
 	html.Title(w,"upload")
 	fmt.Fprintf(w,"<form enctype=\"multipart/form-data\" action=\"/uploadfile\" method=\"post\"> <input type=\"file\" name=\"uploadfile\" /> <input type=\"hidden\" name=\"token\" value=\"{{.}}\"/> <input type=\"submit\" value=\"upload\" /> </form>")
+	fmt.Fprintf(w,"</body></html>")
+}
+func restart(w http.ResponseWriter,r *http.Request){
+	Running = 0
+	fmt.Fprintf(w,"<html><body>")
+	html.Title(w,"restart")
+	fmt.Fprintf(w,"<h2>restart ok</h2>")
+	fmt.Fprintf(w,"<h2><a href=\"/index\">back to home</a></h2>")
 	fmt.Fprintf(w,"</body></html>")
 }
 func uploadfile(w http.ResponseWriter,r *http.Request){
@@ -100,7 +119,7 @@ func uploadfile(w http.ResponseWriter,r *http.Request){
 		defer file.Close() 
 		//fmt.Fprintf(w, "%v", handler.Header) 
 		//创建上传的目的文件 
-		f, err := os.OpenFile("./" + handler.Filename, os.O_WRONLY | os.O_CREATE, 0666) 
+		f, err := os.OpenFile("./" + handler.Filename, os.O_WRONLY | os.O_CREATE, 0766) 
 		if err != nil{ 
 			fmt.Fprintf(w,"<h2>update[%s] faile</h2>",handler.Filename)
 			fmt.Fprintf(w,"</body></html>")
@@ -110,6 +129,7 @@ func uploadfile(w http.ResponseWriter,r *http.Request){
 		//拷贝文件 
 		io.Copy(f, file) 
 		fmt.Fprintf(w,"<h2>update[%s] ok</h2>",handler.Filename)
+		fmt.Fprintf(w,"<h2><a href=\"/restart\">restart</a></h2>")
 		fmt.Fprintf(w,"</body></html>")
 	}
 }

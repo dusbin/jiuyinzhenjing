@@ -4,6 +4,7 @@ import(
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
 )
 func main(){
 	if os.Getppid() != 1{
@@ -15,5 +16,10 @@ func main(){
 		cmd.Start()
 		return
 	}
-	server.Server()
+	for {
+		if server.Running == 0 {
+			go server.Server()
+		}
+		time.Sleep(time.Second)
+	}
 }
