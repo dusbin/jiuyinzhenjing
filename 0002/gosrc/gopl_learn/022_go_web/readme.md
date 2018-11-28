@@ -1,11 +1,19 @@
-# 创建HTTPS的证书
-## 方法一
-    OpenSSL方式，生成私钥key.pem和证书cert.pem，3650代表有效期为10年
-
-`openssl genrsa -out key.pem 2048`
-
-`openssl req -new -x509 -key key.pem -out cert.pem -days 3650`
-## 方法二
-    Golang标准库crypto/tls里有generate_cert.go，可以生成私钥key.pem和证书cert.pem，host参数是必须的，需要注意的是默认有效期是1年 
-
-`go run $GOROOT/src/crypto/tls/generate_cert.go --host localhost`
+# 使用方法
+## 编译程序
+* `make help` 查看需要编译的模块
+* `make bin` 编译主模块
+* `make run` 运行主模块（生成二进制程序到临时目录）
+## 启动服务
+* `make run` 或者`./main`
+## 访问网址
+* http://127.0.0.1:80/
+* https://127.0.0.1:8080/
+* 访问ip为ifconfig列出的所有ip
+## 主模块功能
+* index 主目录 
+* upload 上传文件到main程序所在目录
+* uploadfile 上传文件的结果
+## 插件化模块列表
+* osinfo 系统信息
+* userinfo 当前登录用户
+* langinfo 当前系统语言
