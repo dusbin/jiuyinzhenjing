@@ -120,6 +120,7 @@ func index(w http.ResponseWriter,r *http.Request){
 	for _,v:=range plugin_list{
 		fmt.Fprintf(w,"<h2><a href=\"%s\">%s</a></h2>",v,v)
 	}
+	fmt.Fprintf(w,"<h2><a href=\"/upload\">upload plugin</a></h2>")
 	/*
 	flag:=1
 	if r.FormValue("name") != ""{
