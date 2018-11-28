@@ -141,6 +141,7 @@ func index(w http.ResponseWriter,r *http.Request){
 		fmt.Fprintf(w,"<h2><a href=\"%s\">%s</a></h2>",v,v)
 	}
 	fmt.Fprintf(w,"<h2><a href=\"/upload\">upload plugin</a></h2>")
+	fmt.Fprintf(w,"<h2><a href=\"/restart\">restart</a></h2>")
 	/*
 	flag:=1
 	if r.FormValue("name") != ""{
