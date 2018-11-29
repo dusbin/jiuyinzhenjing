@@ -64,9 +64,11 @@ func Server(){
 		//}
 	}
 	go func(){
+		fmt.Println("Start http")
 		http.ListenAndServe(port,nil)//由于会阻塞，放在goroutine中，不影响下一个服务的启动，可以多开几个端口作为服务入口
 	}()
 	go func(){
+		fmt.Println("Start https")
 		http.ListenAndServeTLS(sport,"cert.pem","key.pem",nil)////由于会阻塞，放在goroutine中，不影响下一个服务的启动，可以多开几个端口作为服务入口
 	}()
 	Running = 1
