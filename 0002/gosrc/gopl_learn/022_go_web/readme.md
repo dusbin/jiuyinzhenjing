@@ -18,3 +18,4 @@
 * osinfo 系统信息
 * userinfo 当前登录用户
 * langinfo 当前系统语言
+* svgdemo sin(x)/x的3D图像
