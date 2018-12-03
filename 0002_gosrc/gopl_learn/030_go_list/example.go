@@ -40,26 +40,41 @@ func test_02(){
 	list.Print()
 }
 func test_03(){
-	list := list.InitList()
+	list_i := new(list.Node)
+	list.InitList(list_i)
 	val := []int{1,2,3,4,5}
-	list.Print()
+	list_i.Print()
 	for _,v := range val {
-		list.Add_tail(v)
+		list_i.Add_tail(v)
 	}
-	list.Print()
+	list_i.Print()
 }
 func test_04(){
-	list := list.InitList()
+	list_s := new(list.Node)
+	list.InitList(list_s)
 	val := []string{"wo","shi","cheng","xu","yuan"}
-	list.Print()
+	list_s.Print()
 	for _,v := range val {
-		list.Add_tail(v)
+		list_s.Add_tail(v)
 	}
-	list.Print()
+	list_s.Print()
 }
+
+func test_05(){
+	list_s := new(list.Node)
+	list.InitList(list_s)
+	val := []string{"wo","shi","cheng","xu","yuan"}
+	list_s.Print()
+	for _,v := range val {
+		list_s.Add_head(v)
+	}
+	list_s.Print()
+}
+
 func main(){
 	//test_01()
 	//test_02()
 	test_03()
 	test_04()
+	test_05()
 }
