@@ -1,0 +1,111 @@
+# 00 学习环境
+0. 学习环境不同，可能有微小差异
+1. `go version`(go version go1.10.1 linux/amd64)
+2. `lsb_release -d`(Description:	Ubuntu 16.04.4 LTS)
+3. `gdb --version`(GNU gdb (Ubuntu 7.11.1-0ubuntu1~16.5) 7.11.1)
+# 01 一个简单的学习例子
+1. 编译 `make`
+2. 调试 `gdb test`
+    * (gdb) `info files` #列出文件信息关注Entry point 
+        ```
+        Entry point: 0x44f4d0
+	    0x0000000000401000 - 0x0000000000482178 is .text
+	    0x0000000000483000 - 0x00000000004c4a5a is .rodata
+	    0x00000000004c4b80 - 0x00000000004c56c8 is .typelink
+	    0x00000000004c56c8 - 0x00000000004c5708 is .itablink
+	    0x00000000004c5708 - 0x00000000004c5708 is .gosymtab
+	    0x00000000004c5720 - 0x000000000051349c is .gopclntab
+	    0x0000000000514000 - 0x0000000000520bdc is .noptrdata
+	    0x0000000000520be0 - 0x00000000005276f0 is .data
+	    0x0000000000527700 - 0x0000000000543d88 is .bss
+	    0x0000000000543da0 - 0x0000000000546438 is .noptrbss
+	    0x0000000000400f9c - 0x0000000000401000 is .note.go.buildid
+        ```
+    * (gdb) `b *0x44f4d0` #在程序入口打断点
+        ```
+        Breakpoint 1 at 0x44f4d0: file /usr/local/go/src/runtime/rt0_linux_amd64.s, line 8.
+        ```
+        * /usr/local/go/src/runtime/rt0_linux_amd64.s, line 8. 内容
+            ```
+            1	// Copyright 2009 The Go Authors. All rights reserved.
+            2	// Use of this source code is governed by a BSD-style
+            3	// license that can be found in the LICENSE file.
+            4	
+            5	#include "textflag.h"
+            6	
+            7	TEXT _rt0_amd64_linux(SB),NOSPLIT,$-8
+            8		JMP	_rt0_amd64(SB)  //入口位置
+            9	
+            10	TEXT _rt0_amd64_linux_lib(SB),NOSPLIT,$0
+            11		JMP	_rt0_amd64_lib(SB)
+            ```
+    * (gdb) `b runtime.rt0_go` 
+        ```
+        Breakpoint 2 at 0x44be10: file /usr/local/go/src/runtime/asm_amd64.s, line 89.
+        ```
+        * /usr/local/go/src/runtime/asm_amd64.s, line 89. 类容[完整代码](./runtime.rt0_go.md)
+            ```
+            cat -n /usr/local/go/src/runtime/asm_amd64.s|grep -w 89 -A20
+                84	DATA _rt0_amd64_lib_argv<>(SB)/8, $0
+            85	GLOBL _rt0_amd64_lib_argv<>(SB),NOPTR, $8
+            86	
+            87	TEXT runtime·rt0_go(SB),NOSPLIT,$0 #完成初始化和运行时启动
+            88		// copy arguments forward on an even stack
+            89		MOVQ	DI, AX		// argc
+            90		MOVQ	SI, BX		// argv
+            91		SUBQ	$(4*8+7), SP		// 2args 2auto
+            92		ANDQ	$~15, SP
+            93		MOVQ	AX, 16(SP)
+            94		MOVQ	BX, 24(SP)
+            95		
+            96		// create istack out of the given (operating system) stack.
+            97		// _cgo_init may update stackguard.
+            98		MOVQ	$runtime·g0(SB), DI
+            99		LEAQ	(-64*1024+104)(SP), BX
+            100		MOVQ	BX, g_stackguard0(DI)
+            ```
+    * (gdb) `b runtime.check` 检查runtime运行环境
+        ```
+        Breakpoint 3 at 0x434540: file /usr/local/go/src/runtime/runtime1.go, line 136.
+        ```
+    * (gdb) `b runtime.args` 整理命令行参数
+        ```
+        Breakpoint 4 at 0x433fd0: file /usr/local/go/src/runtime/runtime1.go, line 60.
+        ```
+    * (gdb) `b runtime.osinit` 确定CPU Core数量
+        ```
+        Breakpoint 5 at 0x424220: file /usr/local/go/src/runtime/os_linux.go, line 272.
+        ```
+    * (gdb) `b runtime.schedinit` 
+        
+        比较重要，关注的所有运行时环境初始化构造都在这里被调用
+
+        参考[完整代码](./runtime.schedinit.md)
+        ```
+        Breakpoint 6 at 0x4288b0: file /usr/local/go/src/runtime/proc.go, line 477.
+        ```
+    * (gdb) `b runtime.mainPC`
+        ```
+        Function "runtime.mainPC" not defined.
+        Make breakpoint pending on future shared library load? (y or [n]) y
+        Breakpoint 7 (runtime.mainPC) pending.
+        ```
+    * (gdb) `b runtime.newproc`
+        ```
+        Breakpoint 8 at 0x42f270: file /usr/local/go/src/runtime/proc.go, line 3240.
+        ```
+    *  (gdb) `b runtime.mstart`
+        ```
+        Breakpoint 9 at 0x42a6d0: file /usr/local/go/src/runtime/proc.go, line 1175.
+        ```
+    * (gdb) `b runtime.main` runtime主入口 参考[完整代码](./runtime.main.md)
+        ```
+        Breakpoint 10 at 0x427700: file /usr/local/go/src/runtime/proc.go, line 109.
+        ```
+    * (gdb) `b main.main` 程序真正运行主入口
+        ```
+        Breakpoint 11 at 0x482070: file /mnt/hgfs/github/jiuyinzhenjing/0002_gosrc/gopl_learn/029_go_source_learn(qyuhen)/01_sample_learning/example.go, line 5.
+        ```
+
+
+            
