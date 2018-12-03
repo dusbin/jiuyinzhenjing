@@ -1,6 +1,7 @@
 package main
 import (
 	"./doubleLinkedList"
+	"./list"
 )
 func test_01(){
 	list := doubleLinkedList.CreateList()
@@ -38,7 +39,27 @@ func test_02(){
 	list.Reverse()
 	list.Print()
 }
+func test_03(){
+	list := list.InitList()
+	val := []int{1,2,3,4,5}
+	list.Print()
+	for _,v := range val {
+		list.Add_tail(v)
+	}
+	list.Print()
+}
+func test_04(){
+	list := list.InitList()
+	val := []string{"wo","shi","cheng","xu","yuan"}
+	list.Print()
+	for _,v := range val {
+		list.Add_tail(v)
+	}
+	list.Print()
+}
 func main(){
-	test_01()
-	test_02()
+	//test_01()
+	//test_02()
+	test_03()
+	test_04()
 }
