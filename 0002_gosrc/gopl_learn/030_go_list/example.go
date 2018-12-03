@@ -69,6 +69,10 @@ func test_05(){
 		list_s.Add_head(v)
 	}
 	list_s.Print()
+	list_s.DeleteVal("shi")
+	list_s.Print()
+	list_s.DeleteVal("xu")
+	list_s.Print()
 }
 
 func main(){
