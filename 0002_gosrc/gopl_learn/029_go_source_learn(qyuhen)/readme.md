@@ -136,5 +136,6 @@
     * 被引用的包，包括lib和标准库net/http里的init函数都被main.init调用
         1. 所有init函数都在同一个goroutine内执行
         2. 所有init函数结束后才会执行main.main函数
-
+# 03 内存分配
+1. 参考[笔记](./03_memory/notes.md)
             
