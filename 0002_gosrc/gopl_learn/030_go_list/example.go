@@ -1,5 +1,6 @@
 package main
 import (
+	"fmt"
 	"./doubleLinkedList"
 	"./list"
 )
@@ -78,11 +79,93 @@ func test_05(){
 	list_s.DeleteVal("xu")
 	list_s.Print()
 }
-
+func test_06(){
+	list_s := new(list.Node)
+	list.InitList(list_s)
+	list_s2 := new(list.Node)
+	list.InitList(list_s2)
+	val := []string{"wo","shi","cheng","xu","yuan"}
+	list_s.Print()
+	list_s2.Print()
+	for _,v := range val {
+		list_s.Add_head(v)
+		list_s2.Add_tail(v)
+	}
+	list_s.Print()
+	list_s2.Print()
+	ok := list_s.List_splice_head(list_s)
+	if ok {
+		fmt.Println("success")
+		list_s.Print()
+		list_s2.Print()
+	}else{
+		fmt.Println("fail")
+	}
+	ok = list_s.List_splice_head(list_s2)
+	if ok {
+		fmt.Println("success")
+		list_s.Print()
+		list_s2.Print()
+	}else{
+		fmt.Println("fail")
+	}
+}
+func test_07(){
+	list_s := new(list.Node)
+	list.InitList(list_s)
+	list_s2 := new(list.Node)
+	list.InitList(list_s2)
+	val := []string{"wo","shi","cheng","xu","yuan"}
+	list_s.Print()
+	list_s2.Print()
+	for _,v := range val {
+		list_s.Add_head(v)
+		list_s2.Add_tail(v)
+	}
+	list_s.Print()
+	list_s2.Print()
+	ok := list_s.List_splice_tail(list_s)
+	if ok {
+		fmt.Println("success")
+		list_s.Print()
+		list_s2.Print()
+	}else{
+		fmt.Println("fail")
+	}
+	ok = list_s.List_splice_tail(list_s2)
+	if ok {
+		fmt.Println("success")
+		list_s.Print()
+		list_s2.Print()
+	}else{
+		fmt.Println("fail")
+	}
+}
+func printNode(s *list.Node){
+	fmt.Println("Data:",s.Data)
+}
+func changeData(s *list.Node){
+	s.Data = "123"
+}
+func test_08(){
+	list_s := new(list.Node)
+	list.InitList(list_s)
+	val := []string{"wo","shi","cheng","xu","yuan"}
+	list_s.Print()
+	for _,v := range val {
+		list_s.Add_head(v)
+	}
+	list_s.Foreach(printNode)
+	list_s.Foreach(changeData)
+	list_s.Foreach(printNode)
+}
 func main(){
 	//test_01()
 	//test_02()
-	test_03()
-	test_04()
-	test_05()
+	//test_03()
+	//test_04()
+	//test_05()
+	//test_06()
+	//test_07()
+	test_08()
 }

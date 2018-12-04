@@ -66,6 +66,7 @@ func delete(pre,next *Node){
 // 删除节点
 func (list *Node)Delete(s *Node){
 	delete(s.Pre,s.Next)
+	s.Pre,s.Next = nil,nil
 }
 // 删除从头到尾找到的第一个元素
 func (list *Node)DeleteVal(x ElemType) bool {
@@ -100,6 +101,47 @@ func (list *Node)MoveValToTail(x ElemType) bool {
 		return false
 	}
 	list.MoveToTail(result)
+	return true
+}
+func list_splice(add,after,before *Node){
+	first,last := add.Next,add.Pre
+	first.Pre = after
+	after.Next = first
+	last.Next = before
+	before.Pre = last
+}
+// 将链表add尾插到list链表上
+func (list *Node)List_splice_tail(add *Node)bool {
+	if list == add {
+		return false
+	}
+	if !add.IsEmpty(){
+		list_splice(add,list.Pre,list)
+		InitList(add)
+	}
+	return true
+}
+// 将链表add头插到list链表上
+func (list *Node)List_splice_head(add *Node)bool {
+	if list == add {
+		return false
+	}
+	if !add.IsEmpty(){
+		list_splice(add,list,list.Next)
+		InitList(add)
+	}
+	return true
+}
+// 对列表中的所有元素均执行 参数为函数
+func (list *Node)Foreach(f func(*Node)) bool {
+	if list.IsEmpty(){
+		return false
+	}
+	s := list.Next
+	for s != list{
+		f(s)
+		s = s.Next
+	}
 	return true
 }
 func (list *Node) Print() error {
