@@ -76,6 +76,32 @@ func (list *Node)DeleteVal(x ElemType) bool {
 	list.Delete(result)
 	return true
 }
+func (list *Node)MoveToHead(s *Node){
+	list.Delete(s)
+	add(s,list,list.Next)
+}
+// 将元素移到队首
+func (list *Node)MoveValToHead(x ElemType) bool {
+	result := list.Find(x)
+	if result == nil {
+		return false
+	}
+	list.MoveToHead(result)
+	return true
+}
+func (list *Node)MoveToTail(s *Node){
+	list.Delete(s)
+	add(s,list.Pre,list)
+}
+// 将元素移到队尾
+func (list *Node)MoveValToTail(x ElemType) bool {
+	result := list.Find(x)
+	if result == nil {
+		return false
+	}
+	list.MoveToTail(result)
+	return true
+}
 func (list *Node) Print() error {
 	fmt.Println("++++Print begin++++")
 	defer fmt.Println("-----Print end-----")
