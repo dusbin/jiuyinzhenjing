@@ -1,8 +1,10 @@
 package main
 
 import (
+	"time"
 	"net/http"
 	"github.com/gorilla/websocket"
+	"./impl"
 )
 
 var (
@@ -15,6 +17,7 @@ var (
 		},	
 	}   
 )
+/*
 func wsHandler(w http.ResponseWriter,r *http.Request){
 	var (
 		conn *websocket.Conn
@@ -36,6 +39,43 @@ func wsHandler(w http.ResponseWriter,r *http.Request){
 		}
 	}
 ERR:
+	conn.Close()
+}
+*/
+func wsHandler(w http.ResponseWriter,r *http.Request){
+	var (
+		wsConn *websocket.Conn
+		err error
+		data []byte
+		conn *impl.Connection
+	)
+	// Upgrade:websocket
+	if wsConn,err = upgrader.Upgrade(w,r,nil);err != nil {
+		return
+	}
+	if conn,err = impl.InitConnection(wsConn);err != nil {
+		goto ERR
+	}
+	// 心跳消息
+	go func(){
+		var err error
+		for {
+			if err = conn.WriteMessage([]byte("heartbeat"));err != nil{
+				return
+			}
+			time.Sleep(1*time.Second)
+		}
+	}()
+	for {
+		if data,err = conn.ReadMessage();err != nil {
+			goto ERR
+		}
+		if err = conn.WriteMessage(data);err != nil {
+			goto ERR
+		}
+	}
+ERR:
+	// TODO:关闭连接的操作
 	conn.Close()
 }
 func main(){

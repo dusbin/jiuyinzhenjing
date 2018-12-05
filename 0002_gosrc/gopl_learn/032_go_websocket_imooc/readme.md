@@ -52,6 +52,16 @@
 8. 完成websocket握手
     1. 使用websocket.Upgrader完成协议握手，得到websocket长连接
     2. 操作websocket api，读取客户端消息，然后原样发送回去
-
-
-
+9. 封装websocket（缺乏工程化的设计）
+    1. 其他代码模块，无法直接操作websocket连接
+    2. websocket连接`非线程安全`，并发读/写需要同步手段
+    3. 隐藏细节，封装API
+        1. 封装Connection结构，隐藏websocket底层连接
+        2. 封装Connection的API，提供Send/Read/Close等`线程安全接口`
+    4. API原理
+        1. SendMessage将消息投递到out channel
+        2. ReadMessage从in channel读取消息
+        3. out channel的消息谁发送给websocket，in channel消息是哪里来的
+    5. 内部原理
+        1. 启动读协程，循环读取WebSocket，将消息投递到in channel
+        2. 启动写协程，循环读取out channel，将消息写给webSocket
