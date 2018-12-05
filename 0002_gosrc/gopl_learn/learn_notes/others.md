@@ -18,3 +18,8 @@ T T1 T2类型必须能被encoding/gob包编解码
 * https://www.cnblogs.com/andyidea/p/6525714.html
 ## init函数
 * 在程序运行前加载，根据包的加载顺序进行执行。包的加载过程遵循于 递归加载
+## reflect包 
+1.  参考 031_go_unsafe
+    * reflect.TypeOf(&f) 获取f数据的类型
+    * fmt.Println(reflect.TypeOf(Float64bits)) Float64bits 为函数名，获取到的值为 func(float64) uint64
+    * fmt.Println(reflect.TypeOf(x)) // struct { a bool; b int16; c []int } 结构体
