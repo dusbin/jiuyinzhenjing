@@ -78,7 +78,9 @@ func Server(){
 			time.Sleep(time.Second)
 		}else {
 			fmt.Println("restart")
-			
+			// 自己实现的一个清扫 defaultServeMux.m （type ServeMux）的方法
+			// 主要解决当插件不存在时，注册函数依然存在，还可以访问不存在的插件功能
+			http.CleanServeMuxMap()
 			break
 		}
 	}
