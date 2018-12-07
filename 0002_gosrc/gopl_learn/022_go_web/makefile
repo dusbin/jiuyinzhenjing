@@ -1,5 +1,5 @@
 BIN=main
-.PHONY:bin clean help run osinfo userinfo langinfo svgdemo
+.PHONY:bin clean help run osinfo userinfo langinfo svgdemo wsclient wsserver
 help:
 	@echo	"make run           #run"
 	@echo	"make bin           #bin"
@@ -7,6 +7,8 @@ help:
 	@echo	"make userinfo      #userinfo"
 	@echo	"make langinfo      #langinfo"
 	@echo	"make svgdemo       #svgdemo"
+	@echo	"make wsclient      #wsclient"
+	@echo	"make wsserver      #wsserver"
 	@echo   "make clean         #清除"
 run:
 	go run main.go
@@ -20,5 +22,9 @@ langinfo:
 	go build -tags langinfo -buildmode=plugin -o langinfo.so langinfo/langinfo.go
 svgdemo:
 	go build -tags svgdemo -buildmode=plugin -o svgdemo.so svgdemo/svgdemo.go
+wsclient:
+	go build -tags wsclient -buildmode=plugin -o wsclient.so wsclient/wsclient.go
+wsserver:
+	go build -tags wsserver -buildmode=plugin -o wsserver.so wsserver/wsserver.go
 clean:
-	rm -rf main osinfo.so userinfo.so langinfo.so svgdemo.so
+	rm -rf main osinfo.so userinfo.so langinfo.so svgdemo.so wsclient.so wsserver.so

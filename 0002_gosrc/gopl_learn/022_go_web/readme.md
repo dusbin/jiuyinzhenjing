@@ -19,3 +19,5 @@
 * userinfo 当前登录用户
 * langinfo 当前系统语言
 * svgdemo sin(x)/x的3D图像
+* wsclient websocket的client
+* wsserver websocket的server端，不应该可见（还未处理，新增加api实现是否可以显示）
