@@ -31,20 +31,31 @@ func Server(){
 			plugin_file:="./"+v.Name()
 			pdll,err:= plugin.Open(plugin_file)
 			if err != nil{
-				panic(err)
+				fmt.Println(err)
+				continue
 			}
 			get_plugin_name_func,err:=pdll.Lookup("Get_plugin_name")
 			if err != nil{
-				panic(err)
+				fmt.Println(err)
+				continue
 			}
 			plugin_name:=get_plugin_name_func.(func()(string))()
 			plugin_func,err:=pdll.Lookup("Func_plugin")
 			if err != nil{
-				panic(err)
+				fmt.Println(err)
+				continue
 			}
 			plg_func:=plugin_func.(func(http.ResponseWriter,*http.Request)())
 			http.HandleFunc(plugin_name,plg_func)
-			plugin_list = append(plugin_list,plugin_name)
+			display_func,err :=pdll.Lookup("IsDisplay")
+			if err != nil{
+				fmt.Println(err)
+				continue
+			}
+			isDisplay := display_func.(func()(bool))()
+			if isDisplay {
+				plugin_list = append(plugin_list,plugin_name)
+			}
 		}
 	}
 	http.HandleFunc("/",index)

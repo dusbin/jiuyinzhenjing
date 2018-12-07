@@ -13,6 +13,9 @@ func Get_plugin_name()(pluginname string){
 	pluginname = "/wsclient"
 	return
 }
+func IsDisplay() bool{
+	return true
+}
 func Func_plugin(w http.ResponseWriter,r *http.Request){
 	data := "<!DOCTYPE html>\n"+
 "	<html>\n" +

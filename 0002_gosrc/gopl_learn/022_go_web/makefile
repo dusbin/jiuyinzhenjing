@@ -1,6 +1,8 @@
 BIN=main
-.PHONY:bin clean help run osinfo userinfo langinfo svgdemo wsclient wsserver
+all:bin osinfo userinfo langinfo svgdemo wsclient wsserver
+.PHONY:all bin clean help run osinfo userinfo langinfo svgdemo wsclient wsserver
 help:
+	@echo	"make all           #all"
 	@echo	"make run           #run"
 	@echo	"make bin           #bin"
 	@echo	"make osinfo        #osinfo"

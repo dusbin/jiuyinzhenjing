@@ -22,6 +22,9 @@ func Get_plugin_name()(pluginname string){
 	pluginname = "/wsserver"
 	return
 }
+func IsDisplay() bool{
+	return false
+}
 func Func_plugin(w http.ResponseWriter,r *http.Request){
 	var (
 		wsConn *websocket.Conn

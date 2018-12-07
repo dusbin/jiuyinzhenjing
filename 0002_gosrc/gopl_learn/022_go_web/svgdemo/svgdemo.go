@@ -21,6 +21,9 @@ func Get_plugin_name()(pluginname string){
 	pluginname = "/svgdemo"
 	return
 }
+func IsDisplay() bool{
+	return true
+}
 func Func_plugin(w http.ResponseWriter,r *http.Request){
 	fmt.Fprintf(w,"<html><body>")
 	html.Title(w,"svgdemo")
