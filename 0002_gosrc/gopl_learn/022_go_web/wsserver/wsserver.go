@@ -10,6 +10,9 @@ import (
 	"time"
 )
 
+/*
+	定义一个转换器，将websocket进行封装
+*/
 var (
 	// 定义一个转换器
 	upgrader = websocket.Upgrader{
@@ -21,13 +24,28 @@ var (
 	}
 )
 
+/*
+	获取插件名称
+*/
 func Get_plugin_name() (pluginname string) {
 	pluginname = "/wsserver"
 	return
 }
+
+/*
+	插件是否展示
+*/
 func IsDisplay() bool {
 	return false
 }
+
+/*
+	执行插件的功能
+		1. 协议从http升级到websocket
+		2. 初始化websocket
+		3. 创建心跳消息go routine
+		4. 进行读消息，写消息实现
+*/
 func Func_plugin(w http.ResponseWriter, r *http.Request) {
 	var (
 		wsConn *websocket.Conn

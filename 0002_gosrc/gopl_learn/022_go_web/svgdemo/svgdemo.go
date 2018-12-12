@@ -19,13 +19,25 @@ const (
 )
 
 var sin30, cos30 = math.Sin(angle), math.Cos(angle) // sin(30°), cos(30°)
+/*
+	获取插件名称
+*/
 func Get_plugin_name() (pluginname string) {
 	pluginname = "/svgdemo"
 	return
 }
+
+/*
+	插件是否展示
+*/
 func IsDisplay() bool {
 	return true
 }
+
+/*
+	执行插件的功能
+		1. 生成sin(x)/x的图像
+*/
 func Func_plugin(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "<html><body>")
 	html.Title(w, "svgdemo")

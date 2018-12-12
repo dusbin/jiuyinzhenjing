@@ -8,6 +8,11 @@ import (
 	"time"
 )
 
+/*
+	程序的主入口
+	第一部分实现后台守护进程
+	第二部分在go routine中实现server的运行
+*/
 func main() {
 	if os.Getppid() != 1 {
 		filePath, _ := filepath.Abs(os.Args[0])

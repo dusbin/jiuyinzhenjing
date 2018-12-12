@@ -17,10 +17,22 @@ import (
 	"time"
 )
 
+/*
+	Running为服务状态
+*/
 var count = 0
 var Running = 0
 var plugin_list = []string{}
 
+/*
+	server主要功能
+		1. 获取所有、加载、注册所有动态库
+		2. 注册上传动态库文件页面
+		3. 上传结果页面
+		4. 注册index页面
+		5. 注册重启页面
+		6. 启动web服务，包括http和https
+*/
 func Server() {
 	dir_list, error := ioutil.ReadDir("./")
 	if error != nil {
@@ -99,12 +111,20 @@ func Server() {
 		}
 	}
 }
+
+/*
+	上传动态库
+*/
 func upload(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "<html><body>")
 	html.Title(w, "upload")
 	fmt.Fprintf(w, "<form enctype=\"multipart/form-data\" action=\"/uploadfile\" method=\"post\"> <input type=\"file\" name=\"uploadfile\" /> <input type=\"hidden\" name=\"token\" value=\"{{.}}\"/> <input type=\"submit\" value=\"upload\" /> </form>")
 	fmt.Fprintf(w, "</body></html>")
 }
+
+/*
+	重启服务
+*/
 func restart(w http.ResponseWriter, r *http.Request) {
 	Running = 0
 	fmt.Fprintf(w, "<html><body>")
@@ -113,6 +133,10 @@ func restart(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "<h2><a href=\"/index\">back to home</a></h2>")
 	fmt.Fprintf(w, "</body></html>")
 }
+
+/*
+	上传结果
+*/
 func uploadfile(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	if r.Method == "GET" {
@@ -151,6 +175,10 @@ func uploadfile(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "</body></html>")
 	}
 }
+
+/*
+	index页面
+*/
 func index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "<html><body>")
 	html.Title(w, "main")

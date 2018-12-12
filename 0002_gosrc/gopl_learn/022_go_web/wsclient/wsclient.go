@@ -11,13 +11,25 @@ import (
 	//"../html"
 )
 
+/*
+	获取插件名称
+*/
 func Get_plugin_name() (pluginname string) {
 	pluginname = "/wsclient"
 	return
 }
+
+/*
+	插件是否展示
+*/
 func IsDisplay() bool {
 	return true
 }
+
+/*
+	执行插件的功能
+		1. 生成一个client的客户端网页
+*/
 func Func_plugin(w http.ResponseWriter, r *http.Request) {
 	data := "<!DOCTYPE html>\n" +
 		"	<html>\n" +
