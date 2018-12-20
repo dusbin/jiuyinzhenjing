@@ -7,8 +7,27 @@ import (
 )
 
 func main() {
-	test_01()
-	test_02()
+	//test_01()
+	//test_02() // 使用读写锁实现并发安全的map
+	test_03() // sync.Map 实现
+}
+
+/* sync.Map原型
+type Map struct{
+	mu Mutex
+	read atomic.Value
+	dirty map[interface{}]*entry
+	misses int
+}
+*/
+func test_03() {
+	var m sync.Map
+	m.Store("method", "eth_getBlockByHash")
+	m.Store("jsonrpc", "2.0")
+	m.Range(func(key, value interface{}) bool {
+		fmt.Println(key, value)
+		return true
+	})
 }
 
 type M struct {

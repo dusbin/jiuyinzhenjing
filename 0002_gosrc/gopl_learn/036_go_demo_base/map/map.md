@@ -10,4 +10,7 @@
     m := make(map[string]string)
     m["result"] = "result"
 3. map不是并发安全的，存在map并发写入错误 `参见example.go：test_02()`
-    * 解决方法：通过对map进行加读写锁实现并发map
+    * 解决方法1：通过对map进行加读写锁实现并发map
+    * 解决方法2:: `参见example.go：test_03()`使用sync.Map，实现了锁机制，保证了并发安全，提供了Store，Load，Delete，Range等操作，开箱可用（即声明后可直接使用）
+# 参考资料
+[慎用golang中的map，特别是在并发操作中](https://studygolang.com/articles/17099)
