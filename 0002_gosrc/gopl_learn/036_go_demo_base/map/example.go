@@ -1,22 +1,30 @@
 package main
+
 import (
+	"fmt"
 	"strconv"
 	"sync"
-	"fmt"
 )
-func main(){
+
+func main() {
 	test_01()
 	test_02()
 }
+
 type M struct {
-	Map map[string]string
+	Map  map[string]string
+	lock sync.RWMutex // 锁
 }
-func (m *M)Set(key,value string){
+
+func (m *M) Set(key, value string) {
+	m.lock.Lock()
 	m.Map[key] = value
+	m.lock.Unlock()
 }
-func (m *M)Get(key string) string{
+func (m *M) Get(key string) string {
 	return m.Map[key]
 }
+
 // 存在 map读写错误，并发错误
 /*
 fatal error: concurrent map writes
@@ -30,32 +38,32 @@ runtime.mapassign_faststr(0x49af00, 0xc420066150, 0x4ba68b, 0x1, 0x0)
 main.(*M).Set(...)
 
 */
-func test_02(){
+func test_02() {
 	c := M{Map: make(map[string]string)}
 	wg := sync.WaitGroup{}
-	for i := 0; i < 9; i++{
+	for i := 0; i < 21; i++ {
 		wg.Add(1)
-		go func(n int){
-			k,v := strconv.Itoa(n),strconv.Itoa(n)
-			c.Set(k,v)
-			fmt.Println(k,c.Get(k))
+		go func(n int) {
+			k, v := strconv.Itoa(n), strconv.Itoa(n)
+			c.Set(k, v)
+			fmt.Println(k, c.Get(k))
 			wg.Done()
 		}(i)
 	}
 	wg.Wait()
 }
-func test_01(){
+func test_01() {
 	scene := make(map[string]int)
 	scene["route"] = 66
 	scene["brazil"] = 4
 	scene["china"] = 960
-	for k,v:= range scene {
-		fmt.Println(k,v)
-	} 
-	for k,_:= range scene {
-		delete(scene,k)
-		for k,v:= range scene {
-			fmt.Println(k,v)
+	for k, v := range scene {
+		fmt.Println(k, v)
+	}
+	for k, _ := range scene {
+		delete(scene, k)
+		for k, v := range scene {
+			fmt.Println(k, v)
 		}
 	}
 }

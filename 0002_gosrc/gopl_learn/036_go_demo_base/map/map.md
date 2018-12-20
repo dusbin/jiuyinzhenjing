@@ -10,3 +10,4 @@
     m := make(map[string]string)
     m["result"] = "result"
 3. map不是并发安全的，存在map并发写入错误 `参见example.go：test_02()`
+    * 解决方法：通过对map进行加读写锁实现并发map
