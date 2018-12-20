@@ -9,4 +9,4 @@
     ```
     m := make(map[string]string)
     m["result"] = "result"
-3. map不是并发安全的
+3. map不是并发安全的，存在map并发写入错误 `参见example.go：test_02()`
