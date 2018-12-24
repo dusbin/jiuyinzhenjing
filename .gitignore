@@ -3,11 +3,6 @@
 0002_gosrc/gopl_learn/016_ccmouse_sortdemo/small.in
 0002_gosrc/gopl_learn/016_ccmouse_sortdemo/016_ccmouse_sortdemo
 0002_gosrc/gopl_learn/016_ccmouse_sortdemo/large.in
-0002_gosrc/gopl_learn/022_go_web/langinfo.so
-0002_gosrc/gopl_learn/022_go_web/osinfo.so
-0002_gosrc/gopl_learn/022_go_web/userinfo.so
-0002_gosrc/gopl_learn/022_go_web/main
+main
 0002_gosrc/gopl_learn/027_go_beego/second_demo/second_demo
-0002_gosrc/gopl_learn/022_go_web/wsserver.so
-0002_gosrc/gopl_learn/022_go_web/wsclient.so
-0002_gosrc/gopl_learn/022_go_web/svgdemo.so
+*.so

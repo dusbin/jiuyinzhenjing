@@ -31,85 +31,86 @@ func IsDisplay() bool {
 		1. 生成一个client的客户端网页
 */
 func Func_plugin(w http.ResponseWriter, r *http.Request) {
-	data := "<!DOCTYPE html>\n" +
-		"	<html>\n" +
-		"	<head>\n" +
-		"		<meta charset=\"utf-8\">\n" +
-		"		<script>\n" +
-		"			window.addEventListener(\"load\", function(evt) {\n" +
-		"				var output = document.getElementById(\"output\");\n" +
-		"				var input = document.getElementById(\"input\");\n" +
-		"				var ws;\n" +
-		"				var print = function(message) {\n" +
-		"					var d = document.createElement(\"div\");\n" +
-		"					d.innerHTML = message;\n" +
-		"					output.appendChild(d);\n" +
-		"				};\n" +
-		"				document.getElementById(\"open\").onclick = function(evt) {\n" +
-		"				if (ws) {\n" +
-		"						return false;\n" +
-		"					}\n" +
-		"					ws = new WebSocket(\"ws://%s:80/wsserver\");\n" +
-		"					ws.onopen = function(evt) {\n" +
-		"						print(\"OPEN\");\n" +
-		"					}\n" +
-		"					ws.onclose = function(evt) {\n" +
-		"						print(\"CLOSE\");\n" +
-		"						ws = null;\n" +
-		"					}\n" +
-		"					ws.onmessage = function(evt) {\n" +
-		"						print(\"RESPONSE: \" + evt.data);\n" +
-		"					}\n" +
-		"					ws.onerror = function(evt) {\n" +
-		"						print(\"ERROR: \" + evt.data);\n" +
-		"					}\n" +
-		"					return false;\n" +
-		"				};\n" +
-		"				document.getElementById(\"send\").onclick = function(evt) {\n" +
-		"					if (!ws) {\n" +
-		"						return false;\n" +
-		"					}\n" +
-		"					print(\"SEND: \" + input.value);\n" +
-		"					ws.send(input.value);\n" +
-		"					return false;\n" +
-		"				};\n" +
-		"				document.getElementById(\"close\").onclick = function(evt) {\n" +
-		"					if (!ws) {\n" +
-		"						return false;\n" +
-		"					}\n" +
-		"					ws.close();\n" +
-		"					return false;\n" +
-		"				};\n" +
-		"			});\n" +
-		"		</script>\n" +
-		"	</head>\n" +
-		"	<body>\n" +
-		"	<table>\n" +
-		"		<tr><td valign=\"top\" width=\"50%%%%\">\n" +
-		"			<p>Click \"Open\" to create a connection to the server,\n" +
-		"			\"Send\" to send a message to the server and \"Close\" to close the connection.\n" +
-		"			You can change the message and send multiple times.\n" +
-		"			</p>\n" +
-		"			<form>\n" +
-		"				<button id=\"open\">Open</button>\n" +
-		"				<button id=\"close\">Close</button>\n" +
-		"				<input id=\"input\" type=\"text\" value=\"Hello world!\">\n" +
-		"				<button id=\"send\">Send</button>\n" +
-		"			</form>\n" +
-		"		</td><td valign=\"top\" width=\"50%%%%\">\n" +
-		"		<div id=\"output\"></div>\n" +
-		"		</td></tr></table>\n" +
-		"	</body>\n" +
-		"	</html>\n"
+	data := `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script>
+	window.addEventListener("load", function(evt) {
+		var output = document.getElementById("output");
+		var input = document.getElementById("input");
+		var ws;
+		var print = function(message) {
+			var d = document.createElement("div");
+			d.innerHTML = message;
+			output.appendChild(d);
+		};
+		document.getElementById("open").onclick = function(evt) {
+			if (ws) {
+				return false;
+			}
+			ws = new WebSocket("ws://%s:80/wsserver");
+			ws.onopen = function(evt) {
+				print("OPEN");
+			}
+			ws.onclose = function(evt) {
+				print("CLOSE");
+				ws = null;
+			}
+			ws.onmessage = function(evt) {
+				print("RESPONSE: " + evt.data);
+			}
+			ws.onerror = function(evt) {
+				print("ERROR: " + evt.data);
+			}
+			return false;
+		};
+		document.getElementById("send").onclick = function(evt) {
+			if (!ws) {
+				return false;
+			}
+			print("SEND: " + input.value);
+			ws.send(input.value);
+			return false;
+		};
+		document.getElementById("close").onclick = function(evt) {
+			if (!ws) {
+				return false;
+			}
+			ws.close();
+			return false;
+		};
+	});
+</script>
+</head>
+<body>
+<table>
+	<tr>
+		<td valign="top" width="50%%">
+			<p>Click "Open" to create a connection to the server,
+				"Send" to send a message to the server and "Close" to close the connection.
+				You can change the message and send multiple times.
+			</p>
+			<form>
+				<button id="open">Open</button>
+				<button id="close">Close</button>
+				<input id="input" type="text" value="Hello world!">
+				<button id="send">Send</button>
+			</form>
+		</td>
+		<td valign="top" width="50%%">
+			<div id="output"></div>
+		</td>
+	</tr>
+</table>
+</body>
+</html>`
 	serverip := findServerIpFromIpAddr(r.RemoteAddr)
 	var data1 string
 	fmt.Println("serverip:", serverip)
 	data1 = fmt.Sprintf(data, serverip)
 	fmt.Fprintf(w, data1)
-	//html.Title(w,"user info")
-	//fmt.Fprintf(w,"<h1>info</h1>")
-	//fmt.Fprintf(w,"<h2>user:%s<h2>",os.Getenv("USER"))
-	//fmt.Fprintf(w,"</body></html>")
 	return
 }
 
