@@ -1,6 +1,7 @@
 package main
 
 import (
+	"runtime"
 	"fmt"
 )
 
@@ -38,8 +39,17 @@ func main() {
 	test_func()
 	test_IsEqual()
 	test_func1()
+	test_print_funcname()
+}
+func getfuncname() string {
+	pc,_,_,_:=runtime.Caller(1)
+	return runtime.FuncForPC(pc).Name()
+}
+func test_print_funcname(){
+	fmt.Println(getfuncname())
 }
 func test_IsEqual() {
+	fmt.Println(getfuncname())
 	var a double = 1.9999
 	var b double = 1.99998
 	fmt.Println(a.IsEqual(b))
@@ -52,6 +62,7 @@ func test_func() {
 	fmt.Println("a:", a)
 }
 func test_defer() {
+	fmt.Println(runtime.GetFuncName())
 	for i := 0; i < 5; i++ {
 		defer fmt.Println(i) //打印 4 3 2 1 0
 	}
