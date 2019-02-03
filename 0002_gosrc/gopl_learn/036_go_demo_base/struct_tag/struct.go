@@ -21,6 +21,11 @@ import (
 		提供了参数校验子包
 */
 func test_1() {
+   /*
+     1.创建一个vd标签包含两个成员，vm和errfactory
+     2.vm为一个标签名的map[string]Struct的结构体实例
+     3.errfactory是一个构造错误信息的工厂函数
+    */
 	var vd = validator.New("vd")
 	type InfoRequest struct {
 		Name string `vd:"($!='Alice'||(Age)$==18)&&regexp("\\w")"`
@@ -39,6 +44,10 @@ func test_1() {
 	}
 	for _, test := range data {
 		info := &InfoRequest{Name: test.Name, Age: test.Age}
+      /*
+        进行校验
+        1.获取元素类型 判断是否为指针 是否为结构体 从map中获取对应的匹配规则，单例模式
+       */
 		fmt.Println(info, "you got", vd.Validate(info) == nil, "you want", test.Result)
 	}
 	/*
